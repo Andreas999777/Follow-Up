@@ -101,6 +101,7 @@
             <select id="coach-selector" class="coach-select" onchange="switchCoach()">
                 <option value="Andreas">Andreas</option>
                 <option value="Thalyssa">Thalyssa</option>
+                <option value="Silvia">Silvia</option>
             </select>
         </div>
 
@@ -293,6 +294,9 @@
             if(currentCoach === 'Andreas') {
                 root.style.setProperty('--theme-color', '#3498db');
                 root.style.setProperty('--theme-dark', '#2980b9');
+            } else if(currentCoach === 'Silvia') {
+                root.style.setProperty('--theme-color', '#f39c12'); // Oranje/Amber
+                root.style.setProperty('--theme-dark', '#e67e22');
             } else {
                 root.style.setProperty('--theme-color', '#7AC142');
                 root.style.setProperty('--theme-dark', '#65a136');
