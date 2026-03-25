@@ -16,25 +16,21 @@
         #sidebar { width: 300px; background: var(--sidebar-dark); color: white; display: flex; flex-direction: column; border-right: 1px solid #ddd; }
         .coach-select { width: 90%; margin: 10px auto; padding: 10px; border-radius: 5px; font-weight: bold; background: #34495e; color: white; border: none; }
         .btn-action { width: 90%; margin: 5px auto; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-action:hover { opacity: 0.8; }
         #client-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin-top: 10px; }
-        .client-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s; }
-        .client-item:hover { background: rgba(255,255,255,0.05); }
+        .client-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
         .client-item.active { background: var(--theme-color); font-weight: bold; }
         #main-content { flex: 1; background: white; overflow-y: auto; padding: 40px; }
-        .view-section { display: none; max-width: 800px; margin: auto; }
+        .view-section { display: none; max-width: 900px; margin: auto; }
         .view-section.active { display: block; }
         .card { background: white; border: 1px solid #eee; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         label { font-weight: bold; display: block; margin-bottom: 8px; color: #7f8c8d; font-size: 12px; text-transform: uppercase; }
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 15px; }
-        .wa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
-        .wa-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .prod-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f9f9f9; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
+        .wa-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .wa-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .prod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .prod-item { background: #f9f9f9; padding: 10px; border-radius: 6px; display: flex; align-items: center; gap: 10px; font-size: 14px; }
         .prod-item input { width: auto; }
-        .dash-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .dash-table th, .dash-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-        .alert-row { background: #ffeaea; color: var(--danger-red); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -53,39 +49,39 @@
             <option value="Thalyssa">Thalyssa (Groen)</option>
             <option value="Silvia">Silvia (Oranje)</option>
         </select>
-        <button class="btn-action" style="background:#fff;" onclick="openView('dashboard-view')">📊 Voorraad Dashboard</button>
+        <button class="btn-action" style="background:#fff;" onclick="openView('dashboard-view')">📊 Dashboard</button>
         <button class="btn-action" style="background:var(--theme-color); color:white;" onclick="createNewClient()">+ Nieuwe Klant</button>
         <ul id="client-list"></ul>
     </div>
 
     <div id="main-content">
         <div id="empty-state" class="view-section active">
-            <h2 style="color:var(--sidebar-dark)">Welkom bij de Coach App</h2>
-            <p>Selecteer een klant in de zijbalk of maak een nieuwe aan om te starten.</p>
+            <h2>Welkom Coach</h2>
+            <p>Selecteer een klant in de lijst om te beginnen.</p>
         </div>
 
         <div id="dashboard-view" class="view-section">
-            <h2>Stock Controle (Rood = 20+ dagen)</h2>
-            <table class="dash-table">
-                <thead><tr><th>Klant</th><th>Coach</th><th>Dagen sinds start</th></tr></thead>
+            <h2>Stockoverzicht (Dagen sinds start)</h2>
+            <table style="width:100%; border-collapse:collapse;">
+                <thead><tr style="text-align:left; border-bottom:2px solid #eee;"><th>Naam</th><th>Coach</th><th>Dagen</th></tr></thead>
                 <tbody id="dashboard-tbody"></tbody>
             </table>
         </div>
 
         <div id="workspace" class="view-section">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h1 id="h-name" style="margin:0;">Klantnaam</h1>
+                <h1 id="h-name" style="margin:0;">Klant</h1>
                 <button class="btn-action" style="background:var(--danger-red); color:white; width:auto;" onclick="deleteClient()">Verwijder Klant</button>
             </div>
-            
+
             <div class="card" style="margin-top:20px;">
                 <div class="grid">
                     <div>
                         <label>Telefoonnummer</label>
-                        <input type="text" id="f-phone" placeholder="bv. 0474791612" oninput="save('fiche','phone',this.value)">
+                        <input type="text" id="f-phone" oninput="save('fiche','phone',this.value)">
                     </div>
                     <div>
-                        <label>Startdatum Programma</label>
+                        <label>Startdatum</label>
                         <input type="date" id="f-start" oninput="save('fiche','startdate',this.value)">
                     </div>
                 </div>
@@ -94,25 +90,24 @@
             <div class="grid">
                 <div class="card">
                     <label>Producten in huis</label>
-                    <div id="product-list">
-                        </div>
+                    <div id="product-list" class="prod-grid"></div>
                 </div>
                 <div class="card">
-                    <label>WhatsApp Follow-up</label>
+                    <label>WhatsApp Berichten</label>
                     <div class="wa-grid">
                         <button class="wa-btn" onclick="sendWA('dag1')">Dag 1</button>
                         <button class="wa-btn" onclick="sendWA('dag3')">Dag 3</button>
                         <button class="wa-btn" onclick="sendWA('dag7')">Dag 7</button>
                         <button class="wa-btn" onclick="sendWA('dag14')">Dag 14</button>
                         <button class="wa-btn" onclick="sendWA('dag21')">Dag 21</button>
-                        <button class="wa-btn" onclick="sendWA('vrij')">Vrij bericht</button>
+                        <button class="wa-btn" style="background:#3498db;" onclick="sendWA('vrij')">Vrij</button>
                     </div>
                 </div>
             </div>
 
             <div class="card">
                 <label>Notities & Voortgang</label>
-                <textarea id="f-notes" rows="6" placeholder="Notities over doelen, allergieën, etc..." oninput="save('fiche','notes',this.value)"></textarea>
+                <textarea id="f-notes" rows="8" placeholder="Vul hier doelen, gewicht of bijzonderheden in..." oninput="save('fiche','notes',this.value)"></textarea>
             </div>
         </div>
     </div>
@@ -132,7 +127,7 @@
         let clients = {};
         let currentId = null;
 
-        const productOptions = ["Formula 1", "PDM", "Thee", "Aloë", "LiftOff", "Fiber", "Micro"];
+        const products = ["Formula 1", "PDM", "Thee", "Aloë", "LiftOff", "Fiber", "Micro", "Night Mode"];
 
         function checkPin() {
             if(document.getElementById('pin-input').value === '2026') {
@@ -156,60 +151,51 @@
         function renderSidebar() {
             const list = document.getElementById('client-list');
             list.innerHTML = '';
-            const sorted = Object.keys(clients).sort((a,b) => clients[a].fiche.name.localeCompare(clients[b].fiche.name));
-            sorted.forEach(id => {
-                let c = clients[id];
-                if(c.coach === currentCoach) {
-                    list.innerHTML += `<li class="client-item ${id===currentId?'active':''}" onclick="selectClient('${id}')">${c.fiche.name || 'Naamloos'}</li>`;
+            for(let id in clients) {
+                if(clients[id].coach === currentCoach) {
+                    list.innerHTML += `<li class="client-item ${id===currentId?'active':''}" onclick="selectClient('${id}')">${clients[id].fiche.name}</li>`;
                 }
-            });
+            }
         }
 
         function selectClient(id) {
             currentId = id;
             const c = clients[id];
             openView('workspace');
-            document.getElementById('h-name').innerText = c.fiche.name || 'Naamloos';
+            document.getElementById('h-name').innerText = c.fiche.name;
             document.getElementById('f-phone').value = c.fiche.phone || '';
             document.getElementById('f-start').value = c.fiche.startdate || '';
             document.getElementById('f-notes').value = c.fiche.notes || '';
             
             const pDiv = document.getElementById('product-list');
             pDiv.innerHTML = '';
-            productOptions.forEach(p => {
+            products.forEach(p => {
                 const checked = (c.products || []).includes(p) ? 'checked' : '';
-                pDiv.innerHTML += `<div class="prod-item"><input type="checkbox" ${checked} onchange="toggleProduct('${p}')"> ${p}</div>`;
+                pDiv.innerHTML += `<div class="prod-item"><input type="checkbox" ${checked} onchange="toggleProd('${p}')"> ${p}</div>`;
             });
             renderSidebar();
         }
 
-        function toggleProduct(p) {
-            let pList = clients[currentId].products || [];
-            if(pList.includes(p)) pList = pList.filter(item => item !== p);
-            else pList.push(p);
-            save('products', null, pList);
+        function toggleProd(p) {
+            let list = clients[currentId].products || [];
+            if(list.includes(p)) list = list.filter(i => i !== p);
+            else list.push(p);
+            db.collection("clients").doc(currentId).update({ products: list });
         }
 
         function save(sec, key, val) {
-            if(!currentId) return;
-            if(sec === 'products') {
-                db.collection("clients").doc(currentId).update({ products: val });
-            } else {
-                let updateObj = {};
-                updateObj[`fiche.${key}`] = val;
-                db.collection("clients").doc(currentId).update(updateObj);
-            }
+            let obj = {};
+            obj[`${sec}.${key}`] = val;
+            db.collection("clients").doc(currentId).update(obj);
         }
 
         function createNewClient() {
-            const name = prompt("Naam van de nieuwe klant?");
-            if(!name) return;
-            const id = "c_" + Date.now();
-            db.collection("clients").doc(id).set({ coach: currentCoach, fiche: {name: name, phone:'', startdate:'', notes:''}, products:[] });
+            const n = prompt("Naam?");
+            if(n) db.collection("clients").add({ coach: currentCoach, fiche: {name:n, phone:'', startdate:'', notes:''}, products: [] });
         }
 
         function deleteClient() {
-            if(confirm("Weet je zeker dat je deze klant wilt verwijderen?")) {
+            if(confirm("Zeker weten?")) {
                 db.collection("clients").doc(currentId).delete();
                 openView('empty-state');
                 currentId = null;
@@ -233,23 +219,18 @@
             tbody.innerHTML = '';
             for(let id in clients) {
                 let c = clients[id];
-                let diff = "-";
-                if(c.fiche.startdate) {
-                    diff = Math.floor((new Date() - new Date(c.fiche.startdate)) / (1000*60*60*24));
-                }
-                tbody.innerHTML += `<tr class="${diff >= 20 ? 'alert-row' : ''}"><td>${c.fiche.name}</td><td>${c.coach}</td><td>${diff} dagen</td></tr>`;
+                let d = "-";
+                if(c.fiche.startdate) d = Math.floor((new Date() - new Date(c.fiche.startdate)) / 86400000) + " dgn";
+                tbody.innerHTML += `<tr><td>${c.fiche.name}</td><td>${c.coach}</td><td>${d}</td></tr>`;
             }
         }
 
-        function sendWA(type) {
+        function sendWA(t) {
             const c = clients[currentId];
-            let msg = "";
-            if(type === 'dag1') msg = `Hoi ${c.fiche.name}! Hoe was je eerste shake deze ochtend? Heb je vragen?`;
-            if(type === 'dag3') msg = `Hoi ${c.fiche.name}! Dag 3! Merk je al wat meer energie?`;
-            if(type === 'vrij') msg = `Hoi ${c.fiche.name}! Hoe gaat het met je programma?`;
-            
-            const cleanPhone = c.fiche.phone.replace(/\D/g,'');
-            window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+            let m = `Hoi ${c.fiche.name}! Hoe gaat het met je programma?`;
+            if(t==='dag1') m = `Hoi ${c.fiche.name}! Hoe was je eerste shake deze ochtend?`;
+            if(t==='dag3') m = `Hoi ${c.fiche.name}! Dag 3! Merk je al wat meer energie?`;
+            window.open(`https://wa.me/${c.fiche.phone.replace(/\D/g,'')}?text=${encodeURIComponent(m)}`, '_blank');
         }
 
         window.onload = init;
