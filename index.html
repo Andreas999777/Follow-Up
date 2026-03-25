@@ -8,106 +8,139 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <style>
-        :root { --theme-color: #3498db; --sidebar-dark: #2C3E50; --bg-light: #F8FAF7; --danger-red: #e74c3c; --success-green: #2ecc71; }
+        :root { --theme-color: #3498db; --sidebar-dark: #2C3E50; --bg-light: #F8FAF7; --danger-red: #e74c3c; }
         body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-light); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Login Scherm */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--sidebar-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; color: white; }
-        .login-box { background: white; color: #333; padding: 40px; border-radius: 12px; text-align: center; width: 300px;}
+        .login-box { background: white; color: #333; padding: 40px; border-radius: 12px; text-align: center; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .pin-input { font-size: 2rem; width: 100%; text-align: center; letter-spacing: 10px; padding: 10px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px; outline: none; }
-        #sidebar { width: 300px; background: var(--sidebar-dark); color: white; display: flex; flex-direction: column; border-right: 1px solid #ddd; }
-        .coach-select { width: 90%; margin: 10px auto; padding: 10px; border-radius: 5px; font-weight: bold; background: #34495e; color: white; border: none; }
-        .btn-action { width: 90%; margin: 5px auto; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        #client-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin-top: 10px; }
-        .client-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
-        .client-item.active { background: var(--theme-color); font-weight: bold; }
-        #main-content { flex: 1; background: white; overflow-y: auto; padding: 40px; }
+
+        /* Sidebar */
+        #sidebar { width: 320px; background: var(--sidebar-dark); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
+        .coach-select { width: 90%; margin: 20px auto 10px; padding: 12px; border-radius: 8px; font-weight: bold; background: #34495e; color: white; border: none; cursor: pointer; }
+        .btn-main { width: 90%; margin: 5px auto; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        #client-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin: 10px 0; }
+        .client-item { padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
+        .client-item:hover { background: rgba(255,255,255,0.05); }
+        .client-item.active { background: var(--theme-color); font-weight: 600; }
+
+        /* Content */
+        #main-content { flex: 1; background: white; overflow-y: auto; padding: 40px; position: relative; }
         .view-section { display: none; max-width: 900px; margin: auto; }
         .view-section.active { display: block; }
-        .card { background: white; border: 1px solid #eee; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        label { font-weight: bold; display: block; margin-bottom: 8px; color: #7f8c8d; font-size: 12px; text-transform: uppercase; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
-        .wa-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .wa-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .card { background: white; border: 1px solid #eee; padding: 30px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        
+        /* Grid & Inputs */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        label { font-weight: 700; display: block; margin-bottom: 10px; color: #7f8c8d; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        input, textarea, select { width: 100%; padding: 14px; border: 1px solid #e0e0e0; border-radius: 10px; box-sizing: border-box; font-family: inherit; font-size: 15px; background: #fafafa; }
+        input:focus { border-color: var(--theme-color); outline: none; background: white; }
+
+        /* WhatsApp Knoppen */
+        .wa-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
+        .wa-btn { background: #25D366; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.3s; }
+        .wa-btn:hover { background: #128C7E; transform: translateY(-2px); }
+
+        /* Product Lijst */
         .prod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .prod-item { background: #f9f9f9; padding: 10px; border-radius: 6px; display: flex; align-items: center; gap: 10px; font-size: 14px; }
-        .prod-item input { width: auto; }
+        .prod-item { background: #f8f9fa; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; border: 1px solid #eee; }
+        .prod-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+
+        /* Dashboard */
+        .dash-table { width: 100%; border-collapse: collapse; margin-top: 20px; border-radius: 10px; overflow: hidden; }
+        .dash-table th { background: #f8f9fa; padding: 15px; text-align: left; color: #7f8c8d; }
+        .dash-table td { padding: 15px; border-bottom: 1px solid #eee; }
+        .alert-row { background: #fff5f5; color: var(--danger-red); font-weight: 700; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-box">
-            <h2>Pincode: 2026</h2>
-            <input type="password" id="pin-input" class="pin-input" maxlength="4">
-            <button class="btn-action" style="background:var(--theme-color); color:white;" onclick="checkPin()">Inloggen</button>
+            <h2 style="margin-top:0;">Coach Login</h2>
+            <p>Voer je pincode in</p>
+            <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="****">
+            <button class="btn-main" style="background:var(--theme-color); color:white;" onclick="checkPin()">OPEN APP</button>
         </div>
     </div>
 
     <div id="sidebar">
         <select id="coach-selector" class="coach-select" onchange="switchCoach()">
-            <option value="Andreas">Andreas (Blauw)</option>
-            <option value="Thalyssa">Thalyssa (Groen)</option>
-            <option value="Silvia">Silvia (Oranje)</option>
+            <option value="Andreas">Andreas</option>
+            <option value="Thalyssa">Thalyssa</option>
+            <option value="Silvia">Silvia</option>
         </select>
-        <button class="btn-action" style="background:#fff;" onclick="openView('dashboard-view')">📊 Dashboard</button>
-        <button class="btn-action" style="background:var(--theme-color); color:white;" onclick="createNewClient()">+ Nieuwe Klant</button>
+        <button class="btn-main" style="background:white; color:var(--sidebar-dark);" onclick="openView('dashboard-view')">📊 DASHBOARD</button>
+        <button class="btn-main" style="background:var(--theme-color); color:white;" onclick="createNewClient()">+ NIEUWE KLANT</button>
         <ul id="client-list"></ul>
     </div>
 
     <div id="main-content">
         <div id="empty-state" class="view-section active">
-            <h2>Welkom Coach</h2>
-            <p>Selecteer een klant in de lijst om te beginnen.</p>
+            <div style="text-align:center; margin-top:100px; color:#bdc3c7;">
+                <h1>Welkom Coach</h1>
+                <p>Selecteer een klant om de fiche te bekijken.</p>
+            </div>
         </div>
 
         <div id="dashboard-view" class="view-section">
-            <h2>Stockoverzicht (Dagen sinds start)</h2>
-            <table style="width:100%; border-collapse:collapse;">
-                <thead><tr style="text-align:left; border-bottom:2px solid #eee;"><th>Naam</th><th>Coach</th><th>Dagen</th></tr></thead>
-                <tbody id="dashboard-tbody"></tbody>
-            </table>
+            <h1>Stock Dashboard</h1>
+            <div class="card">
+                <table class="dash-table">
+                    <thead><tr><th>Klant</th><th>Coach</th><th>Status</th></tr></thead>
+                    <tbody id="dashboard-tbody"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="workspace" class="view-section">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h1 id="h-name" style="margin:0;">Klant</h1>
-                <button class="btn-action" style="background:var(--danger-red); color:white; width:auto;" onclick="deleteClient()">Verwijder Klant</button>
-            </div>
-
-            <div class="card" style="margin-top:20px;">
-                <div class="grid">
-                    <div>
-                        <label>Telefoonnummer</label>
-                        <input type="text" id="f-phone" oninput="save('fiche','phone',this.value)">
-                    </div>
-                    <div>
-                        <label>Startdatum</label>
-                        <input type="date" id="f-start" oninput="save('fiche','startdate',this.value)">
-                    </div>
-                </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <h1 id="h-name" style="margin:0; font-size:32px;">Klantnaam</h1>
+                <button class="btn-main" style="background:var(--danger-red); color:white; width:auto; padding:10px 20px;" onclick="deleteClient()">VERWIJDER KLANT</button>
             </div>
 
             <div class="grid">
                 <div class="card">
-                    <label>Producten in huis</label>
-                    <div id="product-list" class="prod-grid"></div>
+                    <label>Persoonlijke Gegevens</label>
+                    <div style="margin-bottom:15px;">
+                        <label style="font-size:10px;">Telefoonnummer</label>
+                        <input type="text" id="f-phone" placeholder="bv. 0474 12 34 56" oninput="save('fiche','phone',this.value)">
+                    </div>
+                    <div class="grid">
+                        <div>
+                            <label style="font-size:10px;">Startdatum</label>
+                            <input type="date" id="f-start" oninput="save('fiche','startdate',this.value)">
+                        </div>
+                        <div>
+                            <label style="font-size:10px;">Gewicht (Start)</label>
+                            <input type="text" id="f-weight" placeholder="kg" oninput="save('fiche','weight',this.value)">
+                        </div>
+                    </div>
                 </div>
+
                 <div class="card">
-                    <label>WhatsApp Berichten</label>
+                    <label>WhatsApp Follow-up</label>
                     <div class="wa-grid">
-                        <button class="wa-btn" onclick="sendWA('dag1')">Dag 1</button>
-                        <button class="wa-btn" onclick="sendWA('dag3')">Dag 3</button>
-                        <button class="wa-btn" onclick="sendWA('dag7')">Dag 7</button>
-                        <button class="wa-btn" onclick="sendWA('dag14')">Dag 14</button>
-                        <button class="wa-btn" onclick="sendWA('dag21')">Dag 21</button>
-                        <button class="wa-btn" style="background:#3498db;" onclick="sendWA('vrij')">Vrij</button>
+                        <button class="wa-btn" onclick="sendWA('dag1')">DAG 1</button>
+                        <button class="wa-btn" onclick="sendWA('dag3')">DAG 3</button>
+                        <button class="wa-btn" onclick="sendWA('dag7')">DAG 7</button>
+                        <button class="wa-btn" onclick="sendWA('dag14')">DAG 14</button>
+                        <button class="wa-btn" onclick="sendWA('dag21')">DAG 21</button>
+                        <button class="wa-btn" style="background:var(--theme-color);" onclick="sendWA('vrij')">VRIJ</button>
                     </div>
                 </div>
             </div>
 
-            <div class="card">
-                <label>Notities & Voortgang</label>
-                <textarea id="f-notes" rows="8" placeholder="Vul hier doelen, gewicht of bijzonderheden in..." oninput="save('fiche','notes',this.value)"></textarea>
+            <div class="grid" style="margin-top:25px;">
+                <div class="card">
+                    <label>Producten in Programma</label>
+                    <div id="product-list" class="prod-grid"></div>
+                </div>
+                <div class="card">
+                    <label>Notities & Doelen</label>
+                    <textarea id="f-notes" rows="10" placeholder="Schrijf hier bijzonderheden..." oninput="save('fiche','notes',this.value)"></textarea>
+                </div>
             </div>
         </div>
     </div>
@@ -123,17 +156,18 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        
         let currentCoach = localStorage.getItem('coach') || 'Andreas';
         let clients = {};
         let currentId = null;
 
-        const products = ["Formula 1", "PDM", "Thee", "Aloë", "LiftOff", "Fiber", "Micro", "Night Mode"];
+        const allProducts = ["Formula 1", "PDM", "Thee", "Aloë", "LiftOff", "Fiber", "Micro", "Night Mode", "Herbalifeline", "Restore"];
 
         function checkPin() {
             if(document.getElementById('pin-input').value === '2026') {
                 document.getElementById('login-screen').style.display = 'none';
                 localStorage.setItem('authed', 'true');
-            }
+            } else { alert("Verkeerde pincode!"); }
         }
         if(localStorage.getItem('authed') === 'true') document.getElementById('login-screen').style.display = 'none';
 
@@ -144,34 +178,38 @@
                 snap.forEach(doc => clients[doc.id] = doc.data());
                 renderSidebar();
                 renderDashboard();
-                if(currentId) selectClient(currentId);
+                if(currentId) updateUI();
             });
         }
 
         function renderSidebar() {
             const list = document.getElementById('client-list');
             list.innerHTML = '';
-            for(let id in clients) {
-                if(clients[id].coach === currentCoach) {
-                    list.innerHTML += `<li class="client-item ${id===currentId?'active':''}" onclick="selectClient('${id}')">${clients[id].fiche.name}</li>`;
-                }
-            }
+            const coachClients = Object.keys(clients).filter(id => clients[id].coach === currentCoach);
+            coachClients.forEach(id => {
+                list.innerHTML += `<li class="client-item ${id===currentId?'active':''}" onclick="selectClient('${id}')">${clients[id].fiche.name}</li>`;
+            });
         }
 
         function selectClient(id) {
             currentId = id;
-            const c = clients[id];
+            updateUI();
             openView('workspace');
+        }
+
+        function updateUI() {
+            const c = clients[currentId];
             document.getElementById('h-name').innerText = c.fiche.name;
             document.getElementById('f-phone').value = c.fiche.phone || '';
             document.getElementById('f-start').value = c.fiche.startdate || '';
+            document.getElementById('f-weight').value = c.fiche.weight || '';
             document.getElementById('f-notes').value = c.fiche.notes || '';
             
             const pDiv = document.getElementById('product-list');
             pDiv.innerHTML = '';
-            products.forEach(p => {
-                const checked = (c.products || []).includes(p) ? 'checked' : '';
-                pDiv.innerHTML += `<div class="prod-item"><input type="checkbox" ${checked} onchange="toggleProd('${p}')"> ${p}</div>`;
+            allProducts.forEach(p => {
+                const isChecked = (c.products || []).includes(p) ? 'checked' : '';
+                pDiv.innerHTML += `<div class="prod-item"><input type="checkbox" ${isChecked} onchange="toggleProd('${p}')"> ${p}</div>`;
             });
             renderSidebar();
         }
@@ -184,22 +222,30 @@
         }
 
         function save(sec, key, val) {
-            let obj = {};
-            obj[`${sec}.${key}`] = val;
-            db.collection("clients").doc(currentId).update(obj);
+            let update = {};
+            update[`${sec}.${key}`] = val;
+            db.collection("clients").doc(currentId).update(update);
         }
 
         function createNewClient() {
-            const n = prompt("Naam?");
-            if(n) db.collection("clients").add({ coach: currentCoach, fiche: {name:n, phone:'', startdate:'', notes:''}, products: [] });
+            const n = prompt("Naam nieuwe klant?");
+            if(n) db.collection("clients").add({ coach: currentCoach, fiche: {name:n, phone:'', startdate:'', weight:'', notes:''}, products: [] });
         }
 
         function deleteClient() {
-            if(confirm("Zeker weten?")) {
+            if(confirm("Klant definitief verwijderen?")) {
                 db.collection("clients").doc(currentId).delete();
                 openView('empty-state');
                 currentId = null;
             }
+        }
+
+        function switchCoach() {
+            currentCoach = document.getElementById('coach-selector').value;
+            localStorage.setItem('coach', currentCoach);
+            openView('empty-state');
+            currentId = null;
+            renderSidebar();
         }
 
         function openView(id) {
@@ -207,30 +253,29 @@
             document.getElementById(id).classList.add('active');
         }
 
-        function switchCoach() {
-            currentCoach = document.getElementById('coach-selector').value;
-            localStorage.setItem('coach', currentCoach);
-            renderSidebar();
-            openView('empty-state');
-        }
-
         function renderDashboard() {
             const tbody = document.getElementById('dashboard-tbody');
             tbody.innerHTML = '';
-            for(let id in clients) {
-                let c = clients[id];
+            Object.keys(clients).forEach(id => {
+                const c = clients[id];
                 let d = "-";
-                if(c.fiche.startdate) d = Math.floor((new Date() - new Date(c.fiche.startdate)) / 86400000) + " dgn";
-                tbody.innerHTML += `<tr><td>${c.fiche.name}</td><td>${c.coach}</td><td>${d}</td></tr>`;
-            }
+                let alertClass = "";
+                if(c.fiche.startdate) {
+                    const diff = Math.floor((new Date() - new Date(c.fiche.startdate)) / 86400000);
+                    d = diff + " dagen bezig";
+                    if(diff >= 20) alertClass = "alert-row";
+                }
+                tbody.innerHTML += `<tr class="${alertClass}"><td>${c.fiche.name}</td><td>${c.coach}</td><td>${d}</td></tr>`;
+            });
         }
 
         function sendWA(t) {
             const c = clients[currentId];
-            let m = `Hoi ${c.fiche.name}! Hoe gaat het met je programma?`;
-            if(t==='dag1') m = `Hoi ${c.fiche.name}! Hoe was je eerste shake deze ochtend?`;
-            if(t==='dag3') m = `Hoi ${c.fiche.name}! Dag 3! Merk je al wat meer energie?`;
-            window.open(`https://wa.me/${c.fiche.phone.replace(/\D/g,'')}?text=${encodeURIComponent(m)}`, '_blank');
+            let m = "";
+            if(t==='dag1') m = `Hoi ${c.fiche.name}! Hoe was je eerste shake-ontbijt? Al zin in de lunch?`;
+            else if(t==='dag3') m = `Hoi ${c.fiche.name}! Dag 3! Merk je al wat verschil in energie?`;
+            else m = `Hoi ${c.fiche.name}! Hoe gaat het met je programma?`;
+            window.open(`https://wa.me/${(c.fiche.phone || '').replace(/\D/g,'')}?text=${encodeURIComponent(m)}`, '_blank');
         }
 
         window.onload = init;
