@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Follow-up Tool Pro</title>
+    <title>Coach Follow-up Tool Pro + Tips</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -22,7 +22,7 @@
             overflow: hidden;
         }
 
-        /* --- Sidebar: Klantenlijst --- */
+        /* --- Sidebar --- */
         #sidebar {
             width: 300px;
             background: var(--sidebar-dark);
@@ -32,193 +32,89 @@
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             z-index: 10;
         }
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-header h2 { margin: 0; font-size: 1.2rem; color: var(--hb-green); }
-        
-        .sidebar-actions {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
+        .sidebar-actions { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         
         .new-client-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--hb-green);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: 0.2s;
-            margin-bottom: 15px;
+            width: 100%; padding: 12px; background: var(--hb-green); color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
+            font-size: 1rem; transition: 0.2s; margin-bottom: 15px;
         }
         .new-client-btn:hover { background: #65a136; }
 
         .search-bar {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-family: inherit;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            outline: none;
+            width: 100%; padding: 10px; border: none; border-radius: 6px;
+            box-sizing: border-box; font-family: inherit; background: rgba(255,255,255,0.1);
+            color: white; outline: none;
         }
         .search-bar::placeholder { color: rgba(255,255,255,0.5); }
-        .search-bar:focus { background: rgba(255,255,255,0.2); }
 
-        #client-list {
-            flex: 1;
-            overflow-y: auto;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .client-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        #client-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
+        .client-item { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
         .client-item:hover { background: rgba(255,255,255,0.1); }
         .client-item.active { background: var(--hb-green); color: white; font-weight: bold; }
 
         /* --- Main Content --- */
-        #main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: white;
-        }
-        
-        #empty-state {
-            display: flex;
-            flex: 1;
-            align-items: center;
-            justify-content: center;
-            color: #888;
-            font-size: 1.2rem;
-        }
-
-        #workspace {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-        }
+        #main-content { flex: 1; display: flex; flex-direction: column; background: white; }
+        #empty-state { display: flex; flex: 1; align-items: center; justify-content: center; color: #888; font-size: 1.2rem; }
+        #workspace { display: none; flex-direction: column; height: 100%; }
         
         .client-header {
-            padding: 20px 40px;
-            background: #fff;
-            border-bottom: 1px solid var(--border-col);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 20px 40px; background: #fff; border-bottom: 1px solid var(--border-col);
+            display: flex; justify-content: space-between; align-items: center;
         }
         .client-header-info h1 { margin: 0; font-size: 1.8rem; color: #333; }
         .client-header-info .client-meta { color: #666; font-size: 0.9rem; margin-top: 5px; }
 
         .delete-btn {
-            background: transparent;
-            color: var(--danger-red);
-            border: 1px solid var(--danger-red);
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: inherit;
-            transition: 0.2s;
+            background: transparent; color: var(--danger-red); border: 1px solid var(--danger-red);
+            padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;
         }
-        .delete-btn:hover {
-            background: var(--danger-red);
-            color: white;
-        }
+        .delete-btn:hover { background: var(--danger-red); color: white; }
 
         /* Tabs */
-        .tabs {
-            display: flex;
-            background: #f1f1f1;
-            border-bottom: 2px solid var(--border-col);
-            padding: 0 40px;
-        }
+        .tabs { display: flex; background: #f1f1f1; border-bottom: 2px solid var(--border-col); padding: 0 40px; }
         .tab-btn {
-            padding: 15px 20px;
-            border: none;
-            background: transparent;
-            font-family: inherit;
-            font-weight: 600;
-            color: #555;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
+            padding: 15px 20px; border: none; background: transparent; font-family: inherit;
+            font-weight: 600; color: #555; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
         }
-        .tab-btn:hover { color: var(--hb-green); }
         .tab-btn.active { color: var(--hb-green); border-bottom-color: var(--hb-green); }
 
-        /* Tab Content / Formulieren */
-        .tab-content {
-            display: none;
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            background: var(--bg-light);
-        }
+        /* Content */
+        .tab-content { display: none; flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-light); }
         .tab-content.active { display: block; }
 
-        .form-section {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            border: 1px solid #eee;
-        }
+        .form-section { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
         .form-section h3 { margin-top: 0; color: var(--sidebar-dark); border-left: 4px solid var(--hb-green); padding-left: 10px; }
 
-        .question-row { display: flex; flex-direction: column; margin-bottom: 15px; }
-        .question-row label { font-weight: 600; margin-bottom: 8px; color: #444; font-size: 0.95rem; }
+        .question-row { display: flex; flex-direction: column; margin-bottom: 20px; }
+        .question-row label { font-weight: 600; margin-bottom: 5px; color: #444; font-size: 0.95rem; }
         .question-row textarea, .question-row input {
             padding: 12px; border: 1px solid var(--border-col); border-radius: 6px;
-            font-family: inherit; font-size: 0.9rem; resize: vertical; background: #fafafa; transition: 0.2s;
+            font-family: inherit; font-size: 0.9rem; background: #fafafa;
         }
-        .question-row textarea:focus, .question-row input:focus {
-            outline: none; border-color: var(--hb-green); background: white; box-shadow: 0 0 5px rgba(122, 193, 66, 0.2);
-        }
+        .coach-note { font-size: 0.82rem; color: #777; margin-top: 6px; font-style: italic; border-left: 2px solid var(--hb-green); padding-left: 8px; line-height: 1.4; }
         
-        .notes-area {
-            margin-top: 30px;
-            border-top: 2px dashed #eee;
-            padding-top: 20px;
-        }
-        .notes-area label { color: var(--hb-green); }
-
-        .coach-note { font-size: 0.8rem; color: #888; margin-top: 4px; font-style: italic; }
+        .notes-area { margin-top: 30px; border-top: 2px dashed #ddd; padding-top: 20px; }
+        .notes-area label { color: var(--hb-green); font-size: 1.1rem; }
+        
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     </style>
 </head>
 <body>
 
     <div id="sidebar">
-        <div class="sidebar-header">
-            <h2>Mijn Klanten</h2>
-        </div>
+        <div class="sidebar-header"><h2>Mijn Klanten</h2></div>
         <div class="sidebar-actions">
             <button class="new-client-btn" onclick="createNewClient()">+ Nieuwe Klant</button>
             <input type="text" id="search-client" class="search-bar" placeholder="🔍 Zoek klant..." oninput="filterClients()">
         </div>
-        <ul id="client-list">
-            </ul>
+        <ul id="client-list"></ul>
     </div>
 
     <div id="main-content">
-        
-        <div id="empty-state">
-            Selecteer een klant of maak een nieuwe aan om te beginnen.
-        </div>
+        <div id="empty-state">Selecteer een klant of maak een nieuwe aan.</div>
 
         <div id="workspace">
             <div class="client-header">
@@ -247,67 +143,67 @@
                         <div class="question-row"><label>Startdatum (Dag 1)</label><input type="date" id="fiche-startdate" oninput="autoSave('fiche', 'startdate')"></div>
                         <div class="question-row"><label>De "WHY" (Waarom gestart?)</label><textarea id="fiche-why" rows="2" oninput="autoSave('fiche', 'why')"></textarea><div class="coach-note">Gebruik letterlijk de woorden van de klant.</div></div>
                     </div>
-                    <div class="question-row notes-area"><label>Extra opmerkingen (Fiche)</label><textarea id="fiche-notes" rows="4" oninput="autoSave('fiche', 'notes')"></textarea></div>
+                    <div class="question-row notes-area"><label>Extra opmerkingen (Algemeen)</label><textarea id="fiche-notes" rows="4" oninput="autoSave('fiche', 'notes')"></textarea></div>
                 </div>
             </div>
 
             <div id="tab-dag1" class="tab-content">
                 <div class="form-section">
                     <h3>Opvolging Dag 1</h3>
-                    <div class="question-row"><label>1. Hoe smaakte de shake? Lekker?</label><textarea id="d1-q1" rows="2" oninput="autoSave('dag1', 'q1')"></textarea></div>
-                    <div class="question-row"><label>2. Hoe heb je de shake gemaakt?</label><textarea id="d1-q2" rows="2" oninput="autoSave('dag1', 'q2')"></textarea></div>
-                    <div class="question-row"><label>3. Heb je gemeten toen je opstond?</label><textarea id="d1-q3" rows="2" oninput="autoSave('dag1', 'q3')"></textarea></div>
-                    <div class="question-row"><label>4. Hoeveel water heb je gedronken?</label><textarea id="d1-q4" rows="2" oninput="autoSave('dag1', 'q4')"></textarea><div class="coach-note">Focus: 1 liter per 30kg.</div></div>
-                    <div class="question-row"><label>5. Heb je de vezels al genomen?</label><textarea id="d1-q5" rows="2" oninput="autoSave('dag1', 'q5')"></textarea></div>
-                    <div class="question-row"><label>6. Hoe voel je je? (Stoelgang, hoofdpijn?)</label><textarea id="d1-q6" rows="2" oninput="autoSave('dag1', 'q6')"></textarea><div class="coach-note">Hoofdpijn = reiniging! Meer water adviseren.</div></div>
-                    <div class="question-row"><label>7. Heb je honger gehad?</label><textarea id="d1-q7" rows="2" oninput="autoSave('dag1', 'q7')"></textarea></div>
-                    <div class="question-row"><label>8. Is het gelukt om voorfoto's te nemen?</label><textarea id="d1-q8" rows="2" oninput="autoSave('dag1', 'q8')"></textarea></div>
-                    <div class="question-row notes-area"><label>Extra opmerkingen (Dag 1)</label><textarea id="d1-notes" rows="4" oninput="autoSave('dag1', 'notes')"></textarea></div>
+                    <div class="question-row"><label>1. Hoe smaakte de shake? Lekker?</label><textarea id="d1-q1" oninput="autoSave('dag1', 'q1')"></textarea><div class="coach-note">Laat ze vertellen - heel belangrijk!</div></div>
+                    <div class="question-row"><label>2. Hoe heb je de shake gemaakt?</label><textarea id="d1-q2" oninput="autoSave('dag1', 'q2')"></textarea><div class="coach-note">Blender is lekkerst. Check hoeveelheid scheppen en vloeistof.</div></div>
+                    <div class="question-row"><label>3. Heb je gemeten toen je opstond?</label><textarea id="d1-q3" oninput="autoSave('dag1', 'q3')"></textarea><div class="coach-note">Centimeters noteren. Altijd nuchter meten.</div></div>
+                    <div class="question-row"><label>4. Hoeveel water heb je gedronken?</label><textarea id="d1-q4" oninput="autoSave('dag1', 'q4')"></textarea><div class="coach-note">Focus: 1 liter per 30kg lichaamsgewicht.</div></div>
+                    <div class="question-row"><label>5. Heb je de vezels al genomen?</label><textarea id="d1-q5" oninput="autoSave('dag1', 'q5')"></textarea><div class="coach-note">Idealiter 20 min voor de maaltijd.</div></div>
+                    <div class="question-row"><label>6. Hoe voel je je? (Stoelgang, hoofdpijn?)</label><textarea id="d1-q6" oninput="autoSave('dag1', 'q6')"></textarea><div class="coach-note">Hoofdpijn of constipatie? Schitterend, de reiniging is bezig! Meer water drinken.</div></div>
+                    <div class="question-row"><label>7. Heb je honger gehad?</label><textarea id="d1-q7" oninput="autoSave('dag1', 'q7')"></textarea></div>
+                    <div class="question-row"><label>8. Is het gelukt om voorfoto's te nemen?</label><textarea id="d1-q8" oninput="autoSave('dag1', 'q8')"></textarea></div>
+                    <div class="question-row notes-area"><label>Extra opmerkingen (Dag 1)</label><textarea id="d1-notes" rows="3" oninput="autoSave('dag1', 'notes')"></textarea></div>
                 </div>
             </div>
 
             <div id="tab-dag3" class="tab-content">
                 <div class="form-section">
                     <h3>Opvolging Dag 3</h3>
-                    <div class="question-row"><label>1. Hoe voel je je? Meer energie?</label><textarea id="d3-q1" rows="2" oninput="autoSave('dag3', 'q1')"></textarea></div>
-                    <div class="question-row"><label>2. Hoe heb je de shake gemaakt?</label><textarea id="d3-q2" rows="2" oninput="autoSave('dag3', 'q2')"></textarea></div>
-                    <div class="question-row"><label>3. Hoeveel water heb je gedronken?</label><textarea id="d3-q3" rows="2" oninput="autoSave('dag3', 'q3')"></textarea></div>
-                    <div class="question-row"><label>4. Heb je vanmorgen gemeten?</label><textarea id="d3-q4" rows="2" oninput="autoSave('dag3', 'q4')"></textarea></div>
-                    <div class="question-row"><label>5. Honger gehad?</label><textarea id="d3-q5" rows="2" oninput="autoSave('dag3', 'q5')"></textarea></div>
-                    <div class="question-row notes-area"><label>Extra opmerkingen (Dag 3)</label><textarea id="d3-notes" rows="4" oninput="autoSave('dag3', 'notes')"></textarea></div>
+                    <div class="question-row"><label>1. Hoe voel je je? Meer energie?</label><textarea id="d3-q1" oninput="autoSave('dag3', 'q1')"></textarea></div>
+                    <div class="question-row"><label>2. Hoe heb je de shake gemaakt?</label><textarea id="d3-q2" oninput="autoSave('dag3', 'q2')"></textarea><div class="coach-note">Afwisseling in smaak of recept nodig?</div></div>
+                    <div class="question-row"><label>3. Hoeveel water heb je gedronken?</label><textarea id="d3-q3" oninput="autoSave('dag3', 'q3')"></textarea><div class="coach-note">Lukt het om aan de 1L per 30kg te komen?</div></div>
+                    <div class="question-row"><label>4. Heb je vanmorgen gemeten?</label><textarea id="d3-q4" oninput="autoSave('dag3', 'q4')"></textarea><div class="coach-note">Centimeters zijn de beste graadmeter voor vetverlies.</div></div>
+                    <div class="question-row"><label>5. Honger gehad?</label><textarea id="d3-q5" oninput="autoSave('dag3', 'q5')"></textarea><div class="coach-note">Eventueel extra PDM of een gezond tussendoortje adviseren.</div></div>
+                    <div class="question-row notes-area"><label>Extra opmerkingen (Dag 3)</label><textarea id="d3-notes" rows="3" oninput="autoSave('dag3', 'notes')"></textarea></div>
                 </div>
             </div>
 
             <div id="tab-dag7" class="tab-content">
                 <div class="form-section">
                     <h3>Opvolging Dag 7</h3>
-                    <div class="question-row"><label>1. Hoe voel je je? Meer energie?</label><textarea id="d7-q1" rows="2" oninput="autoSave('dag7', 'q1')"></textarea></div>
-                    <div class="question-row"><label>2. Hoeveel water heb je gedronken?</label><textarea id="d7-q2" rows="2" oninput="autoSave('dag7', 'q2')"></textarea></div>
-                    <div class="question-row"><label>3. Heb je vanmorgen gemeten?</label><textarea id="d7-q3" rows="2" oninput="autoSave('dag7', 'q3')"></textarea></div>
-                    <div class="question-row"><label>4. Ben je per ongeluk op de weegschaal terecht gekomen?</label><textarea id="d7-q4" rows="2" oninput="autoSave('dag7', 'q4')"></textarea><div class="coach-note">Focus op centimeters!</div></div>
-                    <div class="question-row"><label>5. Heeft iemand al iets gezegd? (Referenties vragen)</label><textarea id="d7-q5" rows="2" oninput="autoSave('dag7', 'q5')"></textarea></div>
-                    <div class="question-row notes-area"><label>Extra opmerkingen (Dag 7)</label><textarea id="d7-notes" rows="4" oninput="autoSave('dag7', 'notes')"></textarea></div>
+                    <div class="question-row"><label>1. Hoe voel je je? Meer energie?</label><textarea id="d7-q1" oninput="autoSave('dag7', 'q1')"></textarea></div>
+                    <div class="question-row"><label>2. Hoeveel water heb je gedronken?</label><textarea id="d7-q2" oninput="autoSave('dag7', 'q2')"></textarea><div class="coach-note">Voldoende water = sneller resultaat!</div></div>
+                    <div class="question-row"><label>3. Heb je vanmorgen gemeten?</label><textarea id="d7-q3" oninput="autoSave('dag7', 'q3')"></textarea><div class="coach-note">Noteer en tel de centimeters op.</div></div>
+                    <div class="question-row"><label>4. Ben je per ongeluk op de weegschaal terecht gekomen?</label><textarea id="d7-q4" oninput="autoSave('dag7', 'q4')"></textarea><div class="coach-note">Spieren zijn zwaarder dan vet. Focus op centimeters!</div></div>
+                    <div class="question-row"><label>5. Heeft iemand al iets gezegd?</label><textarea id="d7-q5" oninput="autoSave('dag7', 'q5')"></textarea><div class="coach-note">Referenties: Ken je iemand die ook een evaluatie cadeau wil?</div></div>
+                    <div class="question-row notes-area"><label>Extra opmerkingen (Dag 7)</label><textarea id="d7-notes" rows="3" oninput="autoSave('dag7', 'notes')"></textarea></div>
                 </div>
             </div>
 
             <div id="tab-week2" class="tab-content">
                 <div class="form-section">
                     <h3>Opvolging Week 2</h3>
-                    <div class="question-row"><label>1. Hoe voel je je? Meer energie?</label><textarea id="w2-q1" rows="2" oninput="autoSave('week2', 'q1')"></textarea></div>
-                    <div class="question-row"><label>2. Hoeveel water heb je gedronken?</label><textarea id="w2-q2" rows="2" oninput="autoSave('week2', 'q2')"></textarea></div>
-                    <div class="question-row"><label>3. Heb je vanmorgen gemeten?</label><textarea id="w2-q3" rows="2" oninput="autoSave('week2', 'q3')"></textarea></div>
-                    <div class="question-row notes-area"><label>Extra opmerkingen (Week 2)</label><textarea id="w2-notes" rows="4" oninput="autoSave('week2', 'notes')"></textarea></div>
+                    <div class="question-row"><label>1. Hoe voel je je? Meer energie?</label><textarea id="w2-q1" oninput="autoSave('week2', 'q1')"></textarea><div class="coach-note">Check intake symptomen: is er al verbetering merkbaar?</div></div>
+                    <div class="question-row"><label>2. Hoeveel water heb je gedronken?</label><textarea id="w2-q2" oninput="autoSave('week2', 'q2')"></textarea></div>
+                    <div class="question-row"><label>3. Heb je vanmorgen gemeten?</label><textarea id="w2-q3" oninput="autoSave('week2', 'q3')"></textarea><div class="coach-note">Kan vaak al ±10 cm verschil zijn in totaal!</div></div>
+                    <div class="question-row notes-area"><label>Extra opmerkingen (Week 2)</label><textarea id="w2-notes" rows="3" oninput="autoSave('week2', 'notes')"></textarea></div>
                 </div>
             </div>
 
             <div id="tab-week3" class="tab-content">
                 <div class="form-section">
-                    <h3>Verdere Opvolging (Week 3 & later)</h3>
-                    <div class="question-row"><label>Afspraak / Producten</label><textarea id="w3-q1" rows="3" oninput="autoSave('week3', 'q1')"></textarea></div>
-                    <div class="question-row"><label>Dankbaarheidsvragen / Referenties</label><textarea id="w3-q2" rows="3" oninput="autoSave('week3', 'q2')"></textarea></div>
-                    <div class="question-row"><label>Eventueel VIP-Klant worden?</label><textarea id="w3-q3" rows="2" oninput="autoSave('week3', 'q3')"></textarea></div>
-                    <div class="question-row"><label>Notities voor lange termijn (Masterclass, verjaardag, huidverzorging)</label><textarea id="w3-q4" rows="4" oninput="autoSave('week3', 'q4')"></textarea></div>
-                    <div class="question-row notes-area"><label>Extra opmerkingen (Week 3+)</label><textarea id="w3-notes" rows="4" oninput="autoSave('week3', 'notes')"></textarea></div>
+                    <h3>Verdere Opvolging (Week 3+)</h3>
+                    <div class="question-row"><label>Afspraak / Producten</label><textarea id="w3-q1" oninput="autoSave('week3', 'q1')"></textarea><div class="coach-note">Zorg dat ze op tijd bestellen zodat het proces niet onderbroken wordt.</div></div>
+                    <div class="question-row"><label>Dankbaarheidsvragen / Referenties</label><textarea id="w3-q2" oninput="autoSave('week3', 'q2')"></textarea><div class="coach-note">Mensen willen dat hun vrienden zich ook goed voelen. Durf te vragen!</div></div>
+                    <div class="question-row"><label>Eventueel VIP-Klant worden?</label><textarea id="w3-q3" oninput="autoSave('week3', 'q3')"></textarea><div class="coach-note">Bij tevredenheid en lange termijn gebruik: optie aanbieden.</div></div>
+                    <div class="question-row"><label>Lange termijn notities</label><textarea id="w3-q4" oninput="autoSave('week3', 'q4')"></textarea><div class="coach-note">Masterclasses, verjaardag, huidverzorging, infosessie thuis?</div></div>
+                    <div class="question-row notes-area"><label>Extra opmerkingen (Week 3+)</label><textarea id="w3-notes" rows="3" oninput="autoSave('week3', 'notes')"></textarea></div>
                 </div>
             </div>
 
@@ -318,27 +214,20 @@
         let clients = JSON.parse(localStorage.getItem('coachClients')) || {};
         let currentClientId = null;
 
-        function init() {
-            renderSidebar();
-        }
+        function init() { renderSidebar(); }
 
         function createNewClient() {
             const newId = 'client_' + Date.now();
-            clients[newId] = {
-                fiche: { name: 'Nieuwe Klant', phone: '', startdate: '', why: '', notes: '' },
-                dag1: {}, dag3: {}, dag7: {}, week2: {}, week3: {}
-            };
+            clients[newId] = { fiche: {name: 'Nieuwe Klant'}, dag1: {}, dag3: {}, dag7: {}, week2: {}, week3: {} };
             saveData();
-            document.getElementById('search-client').value = ''; // Reset search
+            document.getElementById('search-client').value = '';
             renderSidebar();
             selectClient(newId);
             setTimeout(() => document.getElementById('fiche-name').select(), 50);
         }
 
         function deleteClient() {
-            if (!currentClientId) return;
-            // Bevestigings pop-up
-            if (confirm("Weet je zeker dat je deze klant wilt verwijderen? Dit kan niet ongedaan worden gemaakt.")) {
+            if (currentClientId && confirm("Klant definitief verwijderen?")) {
                 delete clients[currentClientId];
                 saveData();
                 currentClientId = null;
@@ -350,35 +239,21 @@
 
         function filterClients() {
             const query = document.getElementById('search-client').value.toLowerCase();
-            const listItems = document.querySelectorAll('.client-item');
-            
-            listItems.forEach(item => {
-                const name = item.innerText.toLowerCase();
-                if (name.includes(query)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
+            document.querySelectorAll('.client-item').forEach(item => {
+                item.style.display = item.innerText.toLowerCase().includes(query) ? 'block' : 'none';
             });
         }
 
         function renderSidebar() {
             const list = document.getElementById('client-list');
             list.innerHTML = '';
-            
-            // Zet de nieuwste klanten bovenaan door te reverse()
-            const sortedIds = Object.keys(clients).reverse();
-
-            sortedIds.forEach(id => {
-                const data = clients[id];
+            Object.keys(clients).reverse().forEach(id => {
                 const li = document.createElement('li');
                 li.className = 'client-item' + (id === currentClientId ? ' active' : '');
-                li.innerText = data.fiche.name || 'Naamloos';
+                li.innerText = clients[id].fiche.name || 'Naamloos';
                 li.onclick = () => selectClient(id);
                 list.appendChild(li);
             });
-            
-            // Zorg dat de zoekfunctie gerespecteerd blijft na render
             filterClients();
         }
 
@@ -386,81 +261,57 @@
             currentClientId = id;
             document.getElementById('empty-state').style.display = 'none';
             document.getElementById('workspace').style.display = 'flex';
-            
-            renderSidebar(); 
-            openTab('tab-fiche'); 
+            renderSidebar();
+            openTab('tab-fiche');
             loadClientData();
         }
 
         function loadClientData() {
             const data = clients[currentClientId];
-            
             document.getElementById('header-client-name').innerText = data.fiche.name || 'Naamloos';
             document.getElementById('header-client-phone').innerText = data.fiche.phone || '';
+            
+            // Fiche laden
+            const ficheFields = ['name', 'phone', 'startdate', 'why', 'notes'];
+            ficheFields.forEach(f => document.getElementById(`fiche-${f}`).value = data.fiche[f] || '');
 
-            // Fiche
-            document.getElementById('fiche-name').value = data.fiche.name || '';
-            document.getElementById('fiche-phone').value = data.fiche.phone || '';
-            document.getElementById('fiche-startdate').value = data.fiche.startdate || '';
-            document.getElementById('fiche-why').value = data.fiche.why || '';
-            document.getElementById('fiche-notes').value = data.fiche.notes || '';
-
-            // Vragen inladen loop
-            const days = ['dag1', 'dag3', 'dag7', 'week2', 'week3'];
-            days.forEach(day => {
-                let prefix = day.includes('week') ? 'w' + day.replace('week', '') : 'd' + day.replace('dag', '');
-                
-                // Laad q1 t/m q8
-                for (let i = 1; i <= 8; i++) { 
-                    const el = document.getElementById(`${prefix}-q${i}`);
-                    if (el) el.value = data[day][`q${i}`] || '';
+            // Dag/Week velden laden
+            const sections = ['dag1', 'dag3', 'dag7', 'week2', 'week3'];
+            sections.forEach(s => {
+                let pre = s.includes('week') ? 'w' + s.replace('week','') : 'd' + s.replace('dag','');
+                for(let i=1; i<=8; i++) {
+                    let el = document.getElementById(`${pre}-q${i}`);
+                    if(el) el.value = data[s][`q${i}`] || '';
                 }
-                
-                // Laad notities
-                const notesEl = document.getElementById(`${prefix}-notes`);
-                if (notesEl) notesEl.value = data[day].notes || '';
+                let nEl = document.getElementById(`${pre}-notes`);
+                if(nEl) nEl.value = data[s].notes || '';
             });
         }
 
         function autoSave(section, field) {
             if (!currentClientId) return;
-            
-            let val = "";
-            let prefix = section === 'fiche' ? 'fiche' : (section.includes('week') ? 'w' + section.replace('week', '') : 'd' + section.replace('dag', ''));
-            val = document.getElementById(`${prefix}-${field}`).value;
-
-            // Zorg dat de sectie bestaat (voor veiligheid)
-            if (!clients[currentClientId][section]) clients[currentClientId][section] = {};
-            
+            let pre = section === 'fiche' ? 'fiche' : (section.includes('week') ? 'w' + section.replace('week','') : 'd' + section.replace('dag',''));
+            let val = document.getElementById(`${pre}-${field}`).value;
+            if(!clients[currentClientId][section]) clients[currentClientId][section] = {};
             clients[currentClientId][section][field] = val;
             saveData();
         }
 
         function updateSidebarName() {
-            const newName = document.getElementById('fiche-name').value;
-            document.getElementById('header-client-name').innerText = newName || 'Naamloos';
-            
-            // Zoek de actieve list-item en update de tekst zonder volledige re-render
-            const activeItem = document.querySelector('.client-item.active');
-            if (activeItem) activeItem.innerText = newName || 'Naamloos';
+            const name = document.getElementById('fiche-name').value;
+            document.getElementById('header-client-name').innerText = name || 'Naamloos';
+            const active = document.querySelector('.client-item.active');
+            if(active) active.innerText = name || 'Naamloos';
         }
 
-        function saveData() {
-            localStorage.setItem('coachClients', JSON.stringify(clients));
-        }
+        function saveData() { localStorage.setItem('coachClients', JSON.stringify(clients)); }
 
         function openTab(tabId, event) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            
-            if (event) {
-                event.currentTarget.classList.add('active');
-            } else {
-                // Als tab programmatisch geopend wordt (zoals bij selectClient)
-                document.querySelector(`button[onclick="openTab('${tabId}', event)"]`).classList.add('active');
-            }
+            if(event) event.currentTarget.classList.add('active');
+            else document.querySelector(`button[onclick*="${tabId}"]`).classList.add('active');
         }
 
         init();
