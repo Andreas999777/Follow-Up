@@ -12,6 +12,8 @@
             --bg-light: #F8FAF7;
             --border-col: #E0E0E0;
             --danger-red: #e74c3c;
+            --andreas-blue: #3498db;
+            --thalyssa-pink: #e91e63;
         }
         body {
             font-family: 'Montserrat', sans-serif;
@@ -24,7 +26,7 @@
 
         /* --- Sidebar --- */
         #sidebar {
-            width: 300px;
+            width: 320px;
             background: var(--sidebar-dark);
             color: white;
             display: flex;
@@ -32,10 +34,39 @@
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             z-index: 10;
         }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-header h2 { margin: 0; font-size: 1.2rem; color: var(--hb-green); }
-        .sidebar-actions { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         
+        /* Coach Selector Sectie */
+        .coach-selector-box {
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 2px solid var(--hb-green);
+        }
+        .coach-selector-box label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            color: var(--hb-green);
+            font-weight: 700;
+        }
+        .coach-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: white;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .sidebar-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-header h2 { margin: 0; font-size: 1.1rem; }
+        
+        .sidebar-actions { padding: 20px; }
         .new-client-btn {
             width: 100%; padding: 12px; background: var(--hb-green); color: white;
             border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
@@ -48,7 +79,6 @@
             box-sizing: border-box; font-family: inherit; background: rgba(255,255,255,0.1);
             color: white; outline: none;
         }
-        .search-bar::placeholder { color: rgba(255,255,255,0.5); }
 
         #client-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
         .client-item { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
@@ -57,7 +87,7 @@
 
         /* --- Main Content --- */
         #main-content { flex: 1; display: flex; flex-direction: column; background: white; }
-        #empty-state { display: flex; flex: 1; align-items: center; justify-content: center; color: #888; font-size: 1.2rem; }
+        #empty-state { display: flex; flex: 1; align-items: center; justify-content: center; color: #888; font-size: 1.2rem; text-align: center; padding: 40px; }
         #workspace { display: none; flex-direction: column; height: 100%; }
         
         .client-header {
@@ -73,7 +103,6 @@
         }
         .delete-btn:hover { background: var(--danger-red); color: white; }
 
-        /* Tabs */
         .tabs { display: flex; background: #f1f1f1; border-bottom: 2px solid var(--border-col); padding: 0 40px; }
         .tab-btn {
             padding: 15px 20px; border: none; background: transparent; font-family: inherit;
@@ -81,7 +110,6 @@
         }
         .tab-btn.active { color: var(--hb-green); border-bottom-color: var(--hb-green); }
 
-        /* Content */
         .tab-content { display: none; flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-light); }
         .tab-content.active { display: block; }
 
@@ -105,16 +133,31 @@
 <body>
 
     <div id="sidebar">
-        <div class="sidebar-header"><h2>Mijn Klanten</h2></div>
+        <div class="coach-selector-box">
+            <label>Ingelogd als Coach:</label>
+            <select id="coach-selector" class="coach-select" onchange="switchCoach()">
+                <option value="Andreas">Andreas</option>
+                <option value="Thalyssa">Thalyssa</option>
+            </select>
+        </div>
+
+        <div class="sidebar-header">
+            <h2 id="sidebar-title">Klanten van Andreas</h2>
+        </div>
+        
         <div class="sidebar-actions">
             <button class="new-client-btn" onclick="createNewClient()">+ Nieuwe Klant</button>
             <input type="text" id="search-client" class="search-bar" placeholder="🔍 Zoek klant..." oninput="filterClients()">
         </div>
+        
         <ul id="client-list"></ul>
     </div>
 
     <div id="main-content">
-        <div id="empty-state">Selecteer een klant of maak een nieuwe aan.</div>
+        <div id="empty-state">
+            <h2 id="empty-msg">Welkom Coach!</h2>
+            Selecteer een klant uit de lijst van <span id="current-coach-name-msg">Andreas</span> of maak een nieuwe aan.
+        </div>
 
         <div id="workspace">
             <div class="client-header">
@@ -122,7 +165,7 @@
                     <h1 id="header-client-name">Klant Naam</h1>
                     <div class="client-meta" id="header-client-phone">Telefoonnummer</div>
                 </div>
-                <button class="delete-btn" onclick="deleteClient()">🗑️ Verwijder Klant</button>
+                <button class="delete-btn" onclick="deleteClient()">🗑️ Verwijder Klant uit database</button>
             </div>
 
             <div class="tabs">
@@ -211,10 +254,39 @@
     </div>
 
     <script>
-        let clients = JSON.parse(localStorage.getItem('coachClients')) || {};
+        // Data wordt nu per coach opgeslagen: coachClients_Andreas en coachClients_Thalyssa
+        let currentCoach = localStorage.getItem('lastActiveCoach') || 'Andreas';
+        let clients = {};
         let currentClientId = null;
 
-        function init() { renderSidebar(); }
+        function init() {
+            document.getElementById('coach-selector').value = currentCoach;
+            loadCoachDatabase();
+            renderSidebar();
+        }
+
+        function loadCoachDatabase() {
+            const data = localStorage.getItem('coachClients_' + currentCoach);
+            clients = data ? JSON.parse(data) : {};
+            
+            // UI updates
+            document.getElementById('sidebar-title').innerText = `Klanten van ${currentCoach}`;
+            document.getElementById('current-coach-name-msg').innerText = currentCoach;
+        }
+
+        function switchCoach() {
+            currentCoach = document.getElementById('coach-selector').value;
+            localStorage.setItem('lastActiveCoach', currentCoach);
+            
+            // Reset workspace
+            currentClientId = null;
+            document.getElementById('workspace').style.display = 'none';
+            document.getElementById('empty-state').style.display = 'flex';
+            document.getElementById('search-client').value = '';
+            
+            loadCoachDatabase();
+            renderSidebar();
+        }
 
         function createNewClient() {
             const newId = 'client_' + Date.now();
@@ -227,7 +299,7 @@
         }
 
         function deleteClient() {
-            if (currentClientId && confirm("Klant definitief verwijderen?")) {
+            if (currentClientId && confirm(`Weet je zeker dat je deze klant uit de database van ${currentCoach} wilt verwijderen?`)) {
                 delete clients[currentClientId];
                 saveData();
                 currentClientId = null;
@@ -271,11 +343,9 @@
             document.getElementById('header-client-name').innerText = data.fiche.name || 'Naamloos';
             document.getElementById('header-client-phone').innerText = data.fiche.phone || '';
             
-            // Fiche laden
             const ficheFields = ['name', 'phone', 'startdate', 'why', 'notes'];
             ficheFields.forEach(f => document.getElementById(`fiche-${f}`).value = data.fiche[f] || '');
 
-            // Dag/Week velden laden
             const sections = ['dag1', 'dag3', 'dag7', 'week2', 'week3'];
             sections.forEach(s => {
                 let pre = s.includes('week') ? 'w' + s.replace('week','') : 'd' + s.replace('dag','');
@@ -304,14 +374,19 @@
             if(active) active.innerText = name || 'Naamloos';
         }
 
-        function saveData() { localStorage.setItem('coachClients', JSON.stringify(clients)); }
+        function saveData() { 
+            localStorage.setItem('coachClients_' + currentCoach, JSON.stringify(clients)); 
+        }
 
         function openTab(tabId, event) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             if(event) event.currentTarget.classList.add('active');
-            else document.querySelector(`button[onclick*="${tabId}"]`).classList.add('active');
+            else {
+                const targetBtn = document.querySelector(`button[onclick*="${tabId}"]`);
+                if(targetBtn) targetBtn.classList.add('active');
+            }
         }
 
         init();
