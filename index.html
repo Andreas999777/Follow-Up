@@ -3,53 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Follow-Up Tool</title>
     <link rel="stylesheet" href="styles.css">
-    <title>Responsive App</title>
     <style>
-        /* Mobile styles */
-        @media (max-width: 600px) {
-            body {
-                font-size: 16px;
-                padding: 10px;
-            }
+        /* CSS media queries for mobile responsiveness */
+        @media only screen and (max-width: 600px) {
             .sidebar {
                 display: none;
             }
             .hamburger {
                 display: block;
             }
-            .button,
-            input {
-                width: 100%;
+            .menu {
+                display: none;
             }
-            .container {
+            .menu.active {
+                display: block;
+            }
+            .form-container {
+                display: flex;
                 flex-direction: column;
             }
-        }
-        /* Default styles for desktop and larger screens */
-        .container {
-            display: flex;
-            justify-content: space-between;
-        }
-        .button,
-        input {
-            max-width: 300px;
+            input {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            /* Increase touch target sizes */
+            button, .toggle-menu {
+                min-height: 44px;
+                min-width: 44px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <h2>Sidebar</h2>
-        </div>
-        <div class="main-content">
-            <h1>Welcome to the App</h1>
-            <button class="button">Click Me</button>
-            <input type="text" placeholder="Enter text" />
-        </div>
-        <div class="hamburger" style="display: none;">
-            <span>☰</span>
-        </div>
+    <div class="sidebar">
+        <button class="toggle-menu">Menu</button>
+        <nav class="menu">
+            <ul>
+                <li><a href="#form1">Client Management</a></li>
+                <li><a href="#form2">Feedback</a></li>
+                <li><a href="#form3">Settings</a></li>
+            </ul>
+        </nav>
     </div>
+    <main>
+        <section id="form1">
+            <h1>Client Management</h1>
+            <form>
+                <label for="clientName">Client Name:</label>
+                <input type="text" id="clientName" name="clientName" required>
+                <!-- Additional fields and forms here -->
+                <input type="submit" value="Submit">
+            </form>
+        </section>
+        <section id="form2">
+            <h1>Feedback</h1>
+            <form>
+                <label for="feedback">Your Feedback:</label>
+                <textarea id="feedback" name="feedback" required></textarea>
+                <input type="submit" value="Send Feedback">
+            </form>
+        </section>
+        <section id="form3">
+            <h1>Settings</h1>
+            <form>
+                <label for="setting1">Setting:</label>
+                <input type="text" id="setting1" name="setting1" required>
+                <input type="submit" value="Save Settings">
+            </form>
+        </section>
+    </main>
+    <script>
+        // JavaScript for toggling mobile menu
+        document.querySelector('.toggle-menu').onclick = function() {
+            document.querySelector('.menu').classList.toggle('active');
+        };
+    </script>
 </body>
 </html>
