@@ -5,312 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coach Follow-up Master</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-
     <style>
-        :root {
-            --theme-color: #3498db; 
-            --theme-dark: #2980b9;
-            --sidebar-dark: #2C3E50;
-            --bg-light: #F8FAF7;
-            --border-col: #E0E0E0;
-            --danger-red: #e74c3c;
-            --success-green: #2ecc71;
-        }
+        :root { --theme-color: #3498db; --sidebar-dark: #2C3E50; --bg-light: #F8FAF7; --danger-red: #e74c3c; --success-green: #2ecc71; }
         body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-light); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-
-        /* --- Login Screen --- */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--sidebar-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; color: white; }
-        .login-box { background: white; color: #333; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 300px;}
-        .login-box h2 { margin-top: 0; color: var(--theme-color); }
-        .pin-input { font-size: 2rem; width: 100%; text-align: center; letter-spacing: 10px; padding: 10px; border: 2px solid var(--border-col); border-radius: 8px; margin-bottom: 20px; box-sizing: border-box; font-family: inherit;}
-        .login-btn { background: var(--theme-color); color: white; border: none; padding: 12px; width: 100%; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 15px;}
-        .login-error { color: var(--danger-red); display: none; margin-bottom: 15px; font-weight: 600; }
-        .remember-box { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; color: #666; }
-
-        /* --- Sidebar --- */
-        #sidebar { width: 320px; background: var(--sidebar-dark); color: white; display: flex; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 10; transition: transform 0.3s ease; }
-        .coach-selector-box { padding: 20px; background: rgba(0,0,0,0.2); border-bottom: 3px solid var(--theme-color); }
-        .coach-selector-box label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: var(--theme-color); font-weight: 700; }
-        .coach-select { width: 100%; padding: 12px; border-radius: 8px; border: none; background: white; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; outline: none; }
-        
-        .sidebar-actions { padding: 20px; }
-        .btn-dashboard { width: 100%; padding: 12px; background: #fff; color: var(--sidebar-dark); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;}
-        .new-client-btn { width: 100%; padding: 12px; background: var(--theme-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.2s; margin-bottom: 15px; }
-        .search-bar { width: 100%; padding: 10px; border: none; border-radius: 6px; box-sizing: border-box; font-family: inherit; background: rgba(255,255,255,0.1); color: white; outline: none; }
-
-        #client-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
-        .client-item { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center;}
-        .client-item:hover { background: rgba(255,255,255,0.1); }
-        .client-item.active { background: var(--theme-color); color: white; font-weight: bold; }
-
-        /* --- Main Content --- */
-        #main-content { flex: 1; display: flex; flex-direction: column; background: white; position: relative; overflow-y: auto;}
-        
-        /* Mobile Header */
-        #mobile-header { display: none; background: var(--theme-color); color: white; padding: 15px 20px; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 5;}
-        .hamburger { font-size: 1.5rem; cursor: pointer; background: none; border: none; color: white; }
-
-        /* Views */
-        .view-section { display: none; flex-direction: column; flex: 1; height: 100%; }
-        .view-section.active { display: flex; }
-
-        #empty-state { align-items: center; justify-content: center; text-align: center; color: #555; padding: 20px; }
-        #empty-state h2 { font-size: 2.5rem; color: var(--theme-color); margin-bottom: 10px; }
-
-        /* --- Dashboard Tab --- */
-        #dashboard-view { padding: 40px; background: var(--bg-light); overflow-y: auto; }
-        .dash-header { margin-bottom: 20px; border-bottom: 2px solid var(--border-col); padding-bottom: 10px; }
-        .dash-table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .dash-table th, .dash-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-col); }
-        .dash-table th { background: var(--sidebar-dark); color: white; font-weight: 600; }
-        .dash-table tr { cursor: pointer; transition: 0.2s; }
-        .dash-table tr:hover { background: #f1f1f1; }
-        .dash-table tr.alert-row { background: #ffeaea; }
-        .dash-table tr.alert-row:hover { background: #ffdede; }
-        .dash-table tr.alert-row td { color: var(--danger-red); font-weight: 600; }
-        .coach-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; }
-        .bg-andreas { background: #3498db; }
-        .bg-thalyssa { background: #7AC142; }
-        .bg-silvia { background: #f39c12; }
-
-        /* --- Client Workspace --- */
-        .client-header { padding: 20px 40px; background: #fff; border-bottom: 1px solid var(--border-col); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
-        .client-header-info h1 { margin: 0; font-size: 1.8rem; color: #333; }
-        .client-meta { color: #666; font-size: 0.9rem; margin-top: 10px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;}
-        
-        .action-btns { display: flex; gap: 10px; }
-        .btn-wa { background: #25D366; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;}
-        .btn-wa:hover { background: #1ebd5a; }
-        .btn-call { background: var(--theme-color); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem; }
-        
-        .delete-btn { background: transparent; color: var(--danger-red); border: 1px solid var(--danger-red); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit;}
-        .delete-btn:hover { background: var(--danger-red); color: white; }
-
-        .sticky-info-bar { background: #fdfdfd; padding: 15px 40px; border-bottom: 1px solid var(--border-col); font-size: 0.9rem; color: #444; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .info-block strong { color: var(--theme-color); display: block; margin-bottom: 5px; font-size: 0.85rem; text-transform: uppercase; }
-
-        .tabs { display: flex; background: #f1f1f1; border-bottom: 2px solid var(--border-col); padding: 0 40px; overflow-x: auto; white-space: nowrap;}
-        .tab-btn { padding: 15px 20px; border: none; background: transparent; font-family: inherit; font-weight: 600; color: #555; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-        .tab-btn.active { color: var(--theme-color); border-bottom-color: var(--theme-color); }
-
-        .tab-content { display: none; flex: 1; padding: 30px 40px; overflow-y: auto; background: var(--bg-light); }
-        .tab-content.active { display: block; }
-
-        .form-section { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
-        .form-section h3 { margin-top: 0; color: var(--sidebar-dark); border-left: 4px solid var(--theme-color); padding-left: 10px; display: flex; justify-content: space-between; align-items: center;}
-
-        .question-row { display: flex; flex-direction: column; margin-bottom: 20px; }
-        .question-row label { font-weight: 600; margin-bottom: 5px; color: #444; font-size: 0.95rem; }
-        .question-row textarea, .question-row input { padding: 12px; border: 1px solid var(--border-col); border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: #fafafa; width: 100%; box-sizing: border-box;}
-        .coach-note { font-size: 0.82rem; color: #777; margin-top: 6px; font-style: italic; border-left: 2px solid var(--theme-color); padding-left: 8px; }
-        
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
-        .check-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #444; cursor: pointer; }
-
-        .highlight-box { background: #fff8e1; border-left: 4px solid #f39c12; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-        .highlight-box h4 { margin: 0 0 10px 0; color: #d35400; }
-        .symptom-tag { display: inline-block; background: white; border: 1px solid #f39c12; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; margin: 3px; font-weight: 600;}
-
-        .smart-wa-btn { background: #25D366; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 0.8rem; }
-        .smart-wa-btn:hover { background: #1ebd5a; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            #sidebar { position: fixed; left: -320px; height: 100%; z-index: 100; }
-            #sidebar.open { left: 0; }
-            #mobile-header { display: flex; }
-            .grid-2 { grid-template-columns: 1fr; }
-            .client-header { flex-direction: column; align-items: flex-start; }
-            .sticky-info-bar { grid-template-columns: 1fr; }
-            .tabs { padding: 0 10px; }
-            .tab-content { padding: 20px; }
-            #dashboard-view { padding: 20px; }
-            .dash-table th, .dash-table td { padding: 10px; font-size: 0.85rem;}
-        }
+        .login-box { background: white; color: #333; padding: 40px; border-radius: 12px; text-align: center; width: 300px;}
+        .pin-input { font-size: 2rem; width: 100%; text-align: center; letter-spacing: 10px; padding: 10px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px; outline: none; }
+        #sidebar { width: 300px; background: var(--sidebar-dark); color: white; display: flex; flex-direction: column; border-right: 1px solid #ddd; }
+        .coach-select { width: 90%; margin: 10px auto; padding: 10px; border-radius: 5px; font-weight: bold; background: #34495e; color: white; border: none; }
+        .btn-action { width: 90%; margin: 5px auto; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-action:hover { opacity: 0.8; }
+        #client-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin-top: 10px; }
+        .client-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s; }
+        .client-item:hover { background: rgba(255,255,255,0.05); }
+        .client-item.active { background: var(--theme-color); font-weight: bold; }
+        #main-content { flex: 1; background: white; overflow-y: auto; padding: 40px; }
+        .view-section { display: none; max-width: 800px; margin: auto; }
+        .view-section.active { display: block; }
+        .card { background: white; border: 1px solid #eee; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label { font-weight: bold; display: block; margin-bottom: 8px; color: #7f8c8d; font-size: 12px; text-transform: uppercase; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 15px; }
+        .wa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
+        .wa-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .prod-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f9f9f9; }
+        .prod-item input { width: auto; }
+        .dash-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .dash-table th, .dash-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .alert-row { background: #ffeaea; color: var(--danger-red); font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-box">
-            <h2>Team Follow-up</h2>
-            <p>Voer de pincode in om verder te gaan.</p>
-            <div id="login-error" class="login-error">Onjuiste pincode!</div>
-            <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="****">
-            <button class="login-btn" onclick="checkPin()">Inloggen</button>
-            <div class="remember-box">
-                <input type="checkbox" id="remember-pin">
-                <label for="remember-pin">Onthoud mij op dit apparaat</label>
-            </div>
+            <h2>Pincode: 2026</h2>
+            <input type="password" id="pin-input" class="pin-input" maxlength="4">
+            <button class="btn-action" style="background:var(--theme-color); color:white;" onclick="checkPin()">Inloggen</button>
         </div>
     </div>
 
     <div id="sidebar">
-        <div class="coach-selector-box">
-            <label>Ingelogd als Coach:</label>
-            <select id="coach-selector" class="coach-select" onchange="switchCoach()">
-                <option value="Andreas">Andreas</option>
-                <option value="Thalyssa">Thalyssa</option>
-                <option value="Silvia">Silvia</option>
-            </select>
-        </div>
-        
-        <div class="sidebar-actions">
-            <button class="btn-dashboard" onclick="openView('dashboard-view')">📊 Voorraad Dashboard</button>
-            <button class="new-client-btn" onclick="createNewClient()">+ Nieuwe Klant</button>
-            <input type="text" id="search-client" class="search-bar" placeholder="🔍 Zoek in alle klanten..." oninput="filterClients()">
-        </div>
-        
+        <select id="coach-selector" class="coach-select" onchange="switchCoach()">
+            <option value="Andreas">Andreas (Blauw)</option>
+            <option value="Thalyssa">Thalyssa (Groen)</option>
+            <option value="Silvia">Silvia (Oranje)</option>
+        </select>
+        <button class="btn-action" style="background:#fff;" onclick="openView('dashboard-view')">📊 Voorraad Dashboard</button>
+        <button class="btn-action" style="background:var(--theme-color); color:white;" onclick="createNewClient()">+ Nieuwe Klant</button>
         <ul id="client-list"></ul>
     </div>
 
     <div id="main-content">
-        <div id="mobile-header">
-            <button class="hamburger" onclick="toggleSidebar()">☰</button>
-            <h3 style="margin:0;">Coach Follow-up</h3>
-            <div></div>
-        </div>
-
         <div id="empty-state" class="view-section active">
-            <h2 id="welcome-msg">Welkom Coach</h2>
-            <p>Selecteer een klant, voeg een nieuwe toe of bekijk het dashboard.</p>
+            <h2 style="color:var(--sidebar-dark)">Welkom bij de Coach App</h2>
+            <p>Selecteer een klant in de zijbalk of maak een nieuwe aan om te starten.</p>
         </div>
 
         <div id="dashboard-view" class="view-section">
-            <div class="dash-header">
-                <h2>Team Voorraad & Opvolging</h2>
-                <p style="color:#666; margin:0;">Klanten die 20 dagen of langer bezig zijn lichten rood op. Tijd voor een nieuwe bestelling!</p>
-            </div>
+            <h2>Stock Controle (Rood = 20+ dagen)</h2>
             <table class="dash-table">
-                <thead>
-                    <tr>
-                        <th>Klantnaam</th>
-                        <th>Coach</th>
-                        <th>Startdatum</th>
-                        <th>Dagen Bezig</th>
-                        <th>Producten</th>
-                    </tr>
-                </thead>
-                <tbody id="dashboard-tbody">
-                    </tbody>
+                <thead><tr><th>Klant</th><th>Coach</th><th>Dagen sinds start</th></tr></thead>
+                <tbody id="dashboard-tbody"></tbody>
             </table>
         </div>
 
         <div id="workspace" class="view-section">
-            <div class="client-header">
-                <div class="client-header-info">
-                    <h1 id="header-client-name">Klant Naam</h1>
-                    <div class="client-meta">
-                        <span id="header-client-phone">000000000</span>
-                        <div class="action-btns">
-                            <a href="#" id="call-btn" class="btn-call" target="_blank" style="display:none;">📞 Bellen</a>
-                            <a href="#" id="wa-btn" class="btn-wa" target="_blank" style="display:none;">💬 WhatsApp</a>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h1 id="h-name" style="margin:0;">Klantnaam</h1>
+                <button class="btn-action" style="background:var(--danger-red); color:white; width:auto;" onclick="deleteClient()">Verwijder Klant</button>
+            </div>
+            
+            <div class="card" style="margin-top:20px;">
+                <div class="grid">
+                    <div>
+                        <label>Telefoonnummer</label>
+                        <input type="text" id="f-phone" placeholder="bv. 0474791612" oninput="save('fiche','phone',this.value)">
+                    </div>
+                    <div>
+                        <label>Startdatum Programma</label>
+                        <input type="date" id="f-start" oninput="save('fiche','startdate',this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <label>Producten in huis</label>
+                    <div id="product-list">
                         </div>
+                </div>
+                <div class="card">
+                    <label>WhatsApp Follow-up</label>
+                    <div class="wa-grid">
+                        <button class="wa-btn" onclick="sendWA('dag1')">Dag 1</button>
+                        <button class="wa-btn" onclick="sendWA('dag3')">Dag 3</button>
+                        <button class="wa-btn" onclick="sendWA('dag7')">Dag 7</button>
+                        <button class="wa-btn" onclick="sendWA('dag14')">Dag 14</button>
+                        <button class="wa-btn" onclick="sendWA('dag21')">Dag 21</button>
+                        <button class="wa-btn" onclick="sendWA('vrij')">Vrij bericht</button>
                     </div>
                 </div>
-                <button class="delete-btn" onclick="deleteClient()">Klant verwijderen</button>
             </div>
 
-            <div class="sticky-info-bar">
-                <div class="info-block">
-                    <strong>Doel / De "WHY":</strong>
-                    <span id="sticky-why">Nog niet ingevuld...</span>
-                </div>
-                <div class="info-block">
-                    <strong>Producten in gebruik:</strong>
-                    <span id="sticky-products">Geen producten geselecteerd...</span>
-                </div>
-            </div>
-
-            <div class="tabs">
-                <button class="tab-btn active" onclick="openTab('tab-fiche', event)">Klantfiche</button>
-                <button class="tab-btn" onclick="openTab('tab-dag1', event)">Dag 1</button>
-                <button class="tab-btn" onclick="openTab('tab-dag3', event)">Dag 3</button>
-                <button class="tab-btn" onclick="openTab('tab-dag7', event)">Dag 7</button>
-                <button class="tab-btn" onclick="openTab('tab-week2', event)">Week 2</button>
-                <button class="tab-btn" onclick="openTab('tab-week3', event)">Week 3+</button>
-            </div>
-
-            <div id="tab-fiche" class="tab-content active">
-                <div class="form-section">
-                    <h3>Basisgegevens (Intake)</h3>
-                    <div class="grid-2">
-                        <div class="question-row"><label>Naam Klant</label><input type="text" id="fiche-name" oninput="autoSave('fiche', 'name')"></div>
-                        <div class="question-row"><label>Telefoonnummer</label><input type="text" id="fiche-phone" oninput="autoSave('fiche', 'phone')"></div>
-                        <div class="question-row"><label>Startdatum (Dag 1)</label><input type="date" id="fiche-startdate" oninput="autoSave('fiche', 'startdate')"></div>
-                        <div class="question-row"><label>Geboortedatum</label><input type="date" id="fiche-birthdate" oninput="autoSave('fiche', 'birthdate')"></div>
-                        <div class="question-row" style="grid-column: span 2;"><label>De "WHY" (Waarom gestart?)</label><textarea id="fiche-why" rows="2" oninput="autoSave('fiche', 'why')"></textarea></div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Symptomen Checklist (Start)</h3>
-                    <div class="coach-note" style="margin-bottom:15px;">Vink aan waar de klant bij de intake last van heeft. Komt in Week 2 terug als herinnering.</div>
-                    <div class="check-grid" id="symptoms-grid"></div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Producten Inventaris</h3>
-                    <div class="check-grid" id="products-grid"></div>
-                </div>
-            </div>
-
-            <div id="tab-dag1" class="tab-content">
-                <div class="form-section">
-                    <h3>Opvolging Dag 1 <button class="smart-wa-btn" onclick="sendSmartWA('dag1')">💬 Stuur Dag 1 Bericht</button></h3>
-                    <div class="question-row"><label>1. Hoe smaakte de shake?</label><textarea id="d1-q1" oninput="autoSave('dag1', 'q1')"></textarea></div>
-                    <div class="question-row"><label>2. Hoeveel water heb je gedronken?</label><textarea id="d1-q2" oninput="autoSave('dag1', 'q2')"></textarea></div>
-                    <div class="question-row"><label>Notities</label><textarea id="d1-notes" rows="3" oninput="autoSave('dag1', 'notes')"></textarea></div>
-                </div>
-            </div>
-
-            <div id="tab-dag3" class="tab-content">
-                <div class="form-section">
-                    <h3>Opvolging Dag 3 <button class="smart-wa-btn" onclick="sendSmartWA('dag3')">💬 Stuur Dag 3 Bericht</button></h3>
-                    <div class="question-row"><label>1. Hoe voel je je? Meer energie?</label><textarea id="d3-q1" oninput="autoSave('dag3', 'q1')"></textarea></div>
-                    <div class="question-row"><label>Notities</label><textarea id="d3-notes" rows="3" oninput="autoSave('dag3', 'notes')"></textarea></div>
-                </div>
-            </div>
-
-            <div id="tab-dag7" class="tab-content">
-                <div class="form-section">
-                    <h3>Opvolging Dag 7 <button class="smart-wa-btn" onclick="sendSmartWA('dag7')">💬 Stuur Dag 7 Bericht</button></h3>
-                    <div class="question-row"><label>1. Heb je gemeten? (Centimeters!)</label><textarea id="d7-q1" oninput="autoSave('dag7', 'q1')"></textarea></div>
-                    <div class="question-row"><label>Notities</label><textarea id="d7-notes" rows="3" oninput="autoSave('dag7', 'notes')"></textarea></div>
-                </div>
-            </div>
-
-            <div id="tab-week2" class="tab-content">
-                <div class="form-section">
-                    <h3>Opvolging Week 2 <button class="smart-wa-btn" onclick="sendSmartWA('week2')">💬 Stuur Week 2 Bericht</button></h3>
-                    
-                    <div class="highlight-box" id="w2-symptoms-box" style="display:none;">
-                        <h4>Intake Evaluatie (Geheugensteun):</h4>
-                        <p style="font-size:0.85rem; margin-bottom:10px;">De klant had bij start last van deze punten. Vraag of er verbetering is!</p>
-                        <div id="w2-symptoms-list"></div>
-                    </div>
-
-                    <div class="question-row"><label>1. Hoe is het met de symptomen?</label><textarea id="w2-q1" oninput="autoSave('week2', 'q1')"></textarea></div>
-                    <div class="question-row"><label>Notities</label><textarea id="w2-notes" rows="3" oninput="autoSave('week2', 'notes')"></textarea></div>
-                </div>
-            </div>
-
-            <div id="tab-week3" class="tab-content">
-                <div class="form-section">
-                    <h3>Verdere Opvolging <button class="smart-wa-btn" onclick="sendSmartWA('week3')">💬 Stuur Bestel-bericht</button></h3>
-                    <div class="question-row"><label>Afspraak / Nieuwe Producten</label><textarea id="w3-q1" oninput="autoSave('week3', 'q1')"></textarea></div>
-                    <div class="question-row"><label>Notities</label><textarea id="w3-notes" rows="3" oninput="autoSave('week3', 'notes')"></textarea></div>
-                </div>
+            <div class="card">
+                <label>Notities & Voortgang</label>
+                <textarea id="f-notes" rows="6" placeholder="Notities over doelen, allergieën, etc..." oninput="save('fiche','notes',this.value)"></textarea>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 1. FIREBASE CONFIGURATIE ---
         const firebaseConfig = {
             apiKey: "AIzaSyD9xhQuLnjgbaMHZI_vWp4FoUUjTNbA0tM",
             authDomain: "follow-up-coaches.firebaseapp.com",
@@ -321,292 +128,131 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        let currentCoach = localStorage.getItem('coach') || 'Andreas';
+        let clients = {};
+        let currentId = null;
 
-        // --- 2. LIJSTEN & VARIABELEN ---
-        const symptomList = ["Energiegebrek", "Slechte slaper", "Hoofdpijn / Migraine", "Zin in zoet", "Stoelgang problemen", "Opgeblazen gevoel", "Concentratieverlies", "Spierkrampen", "Stress / Angst", "Gewrichtspijn"];
-        const productList = ["F1 Shake", "PDM / Vegan PDM", "Aloë Drank", "Instant Theedrank", "Multivezel", "Microbiotic Max", "Immune Booster", "Phyto Complete", "LiftOff Max"];
+        const productOptions = ["Formula 1", "PDM", "Thee", "Aloë", "LiftOff", "Fiber", "Micro"];
 
-        let currentCoach = localStorage.getItem('lastActiveCoach') || 'Andreas';
-        let clients = {}; // Bevat alle klanten live uit Firestore
-        let currentClientId = null;
-
-        // --- 3. LOGIN & OPSTARTEN ---
-        function checkPinInit() {
-            if (localStorage.getItem('teamPinAccepted') === 'true') {
-                document.getElementById('login-screen').style.display = 'none';
-                initApp();
-            }
-        }
         function checkPin() {
-            const pin = document.getElementById('pin-input').value;
-            if (pin === '2026') {
-                document.getElementById('login-error').style.display = 'none';
+            if(document.getElementById('pin-input').value === '2026') {
                 document.getElementById('login-screen').style.display = 'none';
-                if (document.getElementById('remember-pin').checked) {
-                    localStorage.setItem('teamPinAccepted', 'true');
-                }
-                initApp();
-            } else {
-                document.getElementById('login-error').style.display = 'block';
+                localStorage.setItem('authed', 'true');
             }
         }
-        document.getElementById('pin-input').addEventListener('keypress', function (e) { if (e.key === 'Enter') checkPin(); });
-        checkPinInit();
+        if(localStorage.getItem('authed') === 'true') document.getElementById('login-screen').style.display = 'none';
 
-        function initApp() {
+        function init() {
             document.getElementById('coach-selector').value = currentCoach;
-            applyTheme();
-            generateCheckboxes();
-            listenToFirestore(); // Start live sync
-        }
-
-        // --- 4. THEMA & WEERGAVE ---
-        function applyTheme() {
-            const root = document.documentElement;
-            if(currentCoach === 'Andreas') { root.style.setProperty('--theme-color', '#3498db'); root.style.setProperty('--theme-dark', '#2980b9'); }
-            else if(currentCoach === 'Silvia') { root.style.setProperty('--theme-color', '#f39c12'); root.style.setProperty('--theme-dark', '#e67e22'); }
-            else { root.style.setProperty('--theme-color', '#7AC142'); root.style.setProperty('--theme-dark', '#65a136'); }
-            document.getElementById('welcome-msg').innerText = `Welkom ${currentCoach}`;
-        }
-        function switchCoach() {
-            currentCoach = document.getElementById('coach-selector').value;
-            localStorage.setItem('lastActiveCoach', currentCoach);
-            applyTheme();
-            renderSidebar();
-        }
-        function openView(viewId) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            if(window.innerWidth <= 768) toggleSidebar(); // Sluit menu op mobiel
-            if(viewId === 'dashboard-view') renderDashboard();
-        }
-        function openTab(tabId, event) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if(event) event.currentTarget.classList.add('active');
-        }
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-
-        // --- 5. FIRESTORE LIVE SYNC ---
-        function listenToFirestore() {
-            db.collection("clients").onSnapshot((snapshot) => {
+            db.collection("clients").onSnapshot(snap => {
                 clients = {};
-                snapshot.forEach(doc => { clients[doc.id] = doc.data(); });
+                snap.forEach(doc => clients[doc.id] = doc.data());
                 renderSidebar();
                 renderDashboard();
-                if (currentClientId && clients[currentClientId]) {
-                    updateStickyInfo();
-                    updateWeek2Symptoms();
-                } else if (currentClientId && !clients[currentClientId]) {
-                    // Klant is door iemand anders verwijderd
-                    currentClientId = null;
-                    openView('empty-state');
-                }
+                if(currentId) selectClient(currentId);
             });
-        }
-        
-        // Debounce functie voorkomt dat we bij elke letter direct naar Firestore schrijven
-        let timeout = null;
-        function autoSave(section, field) {
-            if (!currentClientId) return;
-            let pre = section === 'fiche' ? 'fiche' : (section.includes('week') ? 'w' + section.replace('week','') : 'd' + section.replace('dag',''));
-            let val = document.getElementById(`${pre}-${field}`).value;
-            
-            if(!clients[currentClientId][section]) clients[currentClientId][section] = {};
-            clients[currentClientId][section][field] = val;
-
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                db.collection("clients").doc(currentClientId).set(clients[currentClientId], { merge: true });
-                if(section === 'fiche' && field === 'name') document.getElementById('header-client-name').innerText = val || 'Naamloos';
-                if(section === 'fiche' && field === 'phone') updateContactBtns();
-            }, 800);
-        }
-
-        function createNewClient() {
-            const newId = 'client_' + Date.now();
-            const newClientData = { 
-                coach: currentCoach, // Wijs automatisch toe aan actieve coach
-                fiche: { name: '' }, symptoms: [], products: [], 
-                dag1: {}, dag3: {}, dag7: {}, week2: {}, week3: {} 
-            };
-            db.collection("clients").doc(newId).set(newClientData).then(() => {
-                document.getElementById('search-client').value = '';
-                selectClient(newId);
-                // Auto-focus de naam
-                setTimeout(() => document.getElementById('fiche-name').focus(), 100); 
-            });
-        }
-
-        function deleteClient() {
-            if (currentClientId && confirm(`Weet je zeker dat je deze klant definitief wilt verwijderen voor het HELE team?`)) {
-                db.collection("clients").doc(currentClientId).delete();
-            }
-        }
-
-        // --- 6. KLANTFICHE LOGICA ---
-        function selectClient(id) {
-            currentClientId = id;
-            openView('workspace');
-            openTab('tab-fiche');
-            
-            const data = clients[id];
-            document.getElementById('header-client-name').innerText = data.fiche.name || 'Naamloos';
-            document.getElementById('header-client-phone').innerText = data.fiche.phone || 'Geen nummer';
-            
-            const ficheFields = ['name', 'phone', 'startdate', 'birthdate', 'why'];
-            ficheFields.forEach(f => { let el = document.getElementById(`fiche-${f}`); if(el) el.value = data.fiche[f] || ''; });
-
-            const sections = ['dag1', 'dag3', 'dag7', 'week2', 'week3'];
-            sections.forEach(s => {
-                let pre = s.includes('week') ? 'w' + s.replace('week','') : 'd' + s.replace('dag','');
-                for(let i=1; i<=5; i++) { let el = document.getElementById(`${pre}-q${i}`); if(el) el.value = data[s] ? (data[s][`q${i}`]||'') : ''; }
-                let nEl = document.getElementById(`${pre}-notes`); if(nEl) nEl.value = data[s] ? (data[s].notes||'') : '';
-            });
-
-            loadCheckboxes();
-            updateStickyInfo();
-            updateContactBtns();
-            updateWeek2Symptoms();
-            
-            // Markeer geselecteerde klant in zijbalk
-            document.querySelectorAll('.client-item').forEach(el => el.classList.remove('active'));
-            let activeItem = document.getElementById('list-'+id);
-            if(activeItem) activeItem.classList.add('active');
-        }
-
-        // --- 7. CHECKBOXES (SYMPTOMEN & PRODUCTEN) ---
-        function generateCheckboxes() {
-            const symGrid = document.getElementById('symptoms-grid');
-            symptomList.forEach((s, idx) => { symGrid.innerHTML += `<label class="check-item"><input type="checkbox" id="symp_${idx}" onchange="saveCheckboxes()"> ${s}</label>`; });
-            const prodGrid = document.getElementById('products-grid');
-            productList.forEach((p, idx) => { prodGrid.innerHTML += `<label class="check-item"><input type="checkbox" id="prod_${idx}" onchange="saveCheckboxes()"> ${p}</label>`; });
-        }
-        function saveCheckboxes() {
-            if(!currentClientId) return;
-            let checkedSymp = symptomList.filter((s, i) => document.getElementById(`symp_${i}`).checked);
-            let checkedProd = productList.filter((p, i) => document.getElementById(`prod_${i}`).checked);
-            
-            clients[currentClientId].symptoms = checkedSymp;
-            clients[currentClientId].products = checkedProd;
-            db.collection("clients").doc(currentClientId).update({ symptoms: checkedSymp, products: checkedProd });
-        }
-        function loadCheckboxes() {
-            const data = clients[currentClientId];
-            symptomList.forEach((s, i) => { document.getElementById(`symp_${i}`).checked = (data.symptoms || []).includes(s); });
-            productList.forEach((p, i) => { document.getElementById(`prod_${i}`).checked = (data.products || []).includes(p); });
-        }
-        function updateWeek2Symptoms() {
-            const data = clients[currentClientId];
-            const box = document.getElementById('w2-symptoms-box');
-            const list = document.getElementById('w2-symptoms-list');
-            if(data.symptoms && data.symptoms.length > 0) {
-                box.style.display = 'block';
-                list.innerHTML = data.symptoms.map(s => `<span class="symptom-tag">${s}</span>`).join(' ');
-            } else {
-                box.style.display = 'none';
-            }
-        }
-        function updateStickyInfo() {
-            const data = clients[currentClientId];
-            document.getElementById('sticky-why').innerText = data.fiche.why || 'Nog niet ingevuld...';
-            document.getElementById('sticky-products').innerText = (data.products && data.products.length > 0) ? data.products.join(', ') : 'Geen producten geselecteerd...';
-        }
-
-        // --- 8. DASHBOARD & LIJSTEN RENDERING ---
-        function calculateDays(startDateStr) {
-            if(!startDateStr) return null;
-            let sd = new Date(startDateStr); sd.setHours(0,0,0,0);
-            let today = new Date(); today.setHours(0,0,0,0);
-            return Math.floor((today - sd) / (1000 * 60 * 60 * 24));
         }
 
         function renderSidebar() {
             const list = document.getElementById('client-list');
             list.innerHTML = '';
-            const query = document.getElementById('search-client').value.toLowerCase();
-            
-            // Toon in zijbalk alleen klanten van huidige coach of zoekresultaat
-            for(let id in clients) {
+            const sorted = Object.keys(clients).sort((a,b) => clients[a].fiche.name.localeCompare(clients[b].fiche.name));
+            sorted.forEach(id => {
                 let c = clients[id];
-                let name = c.fiche.name || 'Naamloos';
-                if(c.coach !== currentCoach && query === '') continue; // Filter op coach tenzij aan het zoeken
-                if(query && !name.toLowerCase().includes(query)) continue;
-                
-                let li = document.createElement('li');
-                li.className = `client-item ${currentClientId === id ? 'active' : ''}`;
-                li.id = 'list-' + id;
-                li.innerHTML = `<span>${name}</span> <span style="font-size:0.7rem; opacity:0.7">${c.coach}</span>`;
-                li.onclick = () => selectClient(id);
-                list.appendChild(li);
+                if(c.coach === currentCoach) {
+                    list.innerHTML += `<li class="client-item ${id===currentId?'active':''}" onclick="selectClient('${id}')">${c.fiche.name || 'Naamloos'}</li>`;
+                }
+            });
+        }
+
+        function selectClient(id) {
+            currentId = id;
+            const c = clients[id];
+            openView('workspace');
+            document.getElementById('h-name').innerText = c.fiche.name || 'Naamloos';
+            document.getElementById('f-phone').value = c.fiche.phone || '';
+            document.getElementById('f-start').value = c.fiche.startdate || '';
+            document.getElementById('f-notes').value = c.fiche.notes || '';
+            
+            const pDiv = document.getElementById('product-list');
+            pDiv.innerHTML = '';
+            productOptions.forEach(p => {
+                const checked = (c.products || []).includes(p) ? 'checked' : '';
+                pDiv.innerHTML += `<div class="prod-item"><input type="checkbox" ${checked} onchange="toggleProduct('${p}')"> ${p}</div>`;
+            });
+            renderSidebar();
+        }
+
+        function toggleProduct(p) {
+            let pList = clients[currentId].products || [];
+            if(pList.includes(p)) pList = pList.filter(item => item !== p);
+            else pList.push(p);
+            save('products', null, pList);
+        }
+
+        function save(sec, key, val) {
+            if(!currentId) return;
+            if(sec === 'products') {
+                db.collection("clients").doc(currentId).update({ products: val });
+            } else {
+                let updateObj = {};
+                updateObj[`fiche.${key}`] = val;
+                db.collection("clients").doc(currentId).update(updateObj);
             }
         }
-        function filterClients() { renderSidebar(); }
+
+        function createNewClient() {
+            const name = prompt("Naam van de nieuwe klant?");
+            if(!name) return;
+            const id = "c_" + Date.now();
+            db.collection("clients").doc(id).set({ coach: currentCoach, fiche: {name: name, phone:'', startdate:'', notes:''}, products:[] });
+        }
+
+        function deleteClient() {
+            if(confirm("Weet je zeker dat je deze klant wilt verwijderen?")) {
+                db.collection("clients").doc(currentId).delete();
+                openView('empty-state');
+                currentId = null;
+            }
+        }
+
+        function openView(id) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function switchCoach() {
+            currentCoach = document.getElementById('coach-selector').value;
+            localStorage.setItem('coach', currentCoach);
+            renderSidebar();
+            openView('empty-state');
+        }
 
         function renderDashboard() {
             const tbody = document.getElementById('dashboard-tbody');
             tbody.innerHTML = '';
-            
-            // Sorteer: Klanten met meeste dagen bovenaan
-            let dashList = Object.keys(clients).map(id => ({ id, ...clients[id], days: calculateDays(clients[id].fiche.startdate) }));
-            dashList.sort((a, b) => (b.days || 0) - (a.days || 0));
-
-            dashList.forEach(c => {
-                let tr = document.createElement('tr');
-                let isAlert = c.days >= 20; // ROOD ALARM bij 20+ dagen
-                if(isAlert) tr.className = 'alert-row';
-                
-                let coachClass = c.coach === 'Andreas' ? 'bg-andreas' : (c.coach === 'Thalyssa' ? 'bg-thalyssa' : 'bg-silvia');
-                let prods = c.products && c.products.length > 0 ? c.products.join(', ') : '-';
-                
-                tr.innerHTML = `
-                    <td><strong>${c.fiche.name || 'Naamloos'}</strong></td>
-                    <td><span class="coach-badge ${coachClass}">${c.coach || '?'}</span></td>
-                    <td>${c.fiche.startdate ? new Date(c.fiche.startdate).toLocaleDateString('nl-NL') : '-'}</td>
-                    <td>${c.days !== null ? c.days + ' dagen' : '-'}</td>
-                    <td style="font-size:0.85rem;">${prods}</td>
-                `;
-                tr.onclick = () => selectClient(c.id);
-                tbody.appendChild(tr);
-            });
-        }
-
-        // --- 9. SMART COMMUNICATIE (WHATSAPP & BELLEN) ---
-        function updateContactBtns() {
-            const phone = document.getElementById('fiche-phone').value.replace(/\D/g,'');
-            const waBtn = document.getElementById('wa-btn');
-            const callBtn = document.getElementById('call-btn');
-            if(phone.length >= 9) {
-                waBtn.style.display = 'flex'; callBtn.style.display = 'inline-block';
-                let formattedPhone = phone.startsWith('0') ? '32' + phone.substring(1) : phone;
-                waBtn.href = `https://wa.me/${formattedPhone}`;
-                callBtn.href = `tel:+${formattedPhone}`;
-            } else {
-                waBtn.style.display = 'none'; callBtn.style.display = 'none';
+            for(let id in clients) {
+                let c = clients[id];
+                let diff = "-";
+                if(c.fiche.startdate) {
+                    diff = Math.floor((new Date() - new Date(c.fiche.startdate)) / (1000*60*60*24));
+                }
+                tbody.innerHTML += `<tr class="${diff >= 20 ? 'alert-row' : ''}"><td>${c.fiche.name}</td><td>${c.coach}</td><td>${diff} dagen</td></tr>`;
             }
         }
 
-        function sendSmartWA(type) {
-            const data = clients[currentClientId];
-            const name = data.fiche.name ? data.fiche.name.split(' ')[0] : 'daar';
-            const phone = document.getElementById('fiche-phone').value.replace(/\D/g,'');
-            if(phone.length < 9) return alert('Vul eerst een geldig telefoonnummer in!');
-            let formattedPhone = phone.startsWith('0') ? '32' + phone.substring(1) : phone;
-
-            let text = "";
-            const afsluiting = "\n\nIk bel je straks even op voor onze follow-up! 📞";
-
-            if(type === 'dag1') text = `Hoi ${name}! Eerste dag! 🎉 Hoe smaakte je shake vanmorgen? Heb je eraan gedacht om vandaag genoeg water te drinken? Succes!`;
-            if(type === 'dag3') text = `Hey ${name}, we zijn al op dag 3! Merk je toevallig al iets van je energiepeil? Ben benieuwd hoe het gaat!`;
-            if(type === 'dag7') text = `Wauw ${name}, alweer een week bezig! 🚀 Heb je vanmorgen je centimeters al opgemeten? Dat is vaak de beste graadmeter!`;
-            if(type === 'week2') text = `Hoi ${name}! Tijd voor onze Week 2 check-up. Hoe gaat het met je doelen? Ben heel benieuwd naar je progressie!`;
-            if(type === 'week3') text = `Hey ${name}! Je bent super goed bezig. Zullen we even kijken naar je voorraad zodat je schema niet onderbroken wordt?`;
-
-            const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text + afsluiting)}`;
-            window.open(url, '_blank');
+        function sendWA(type) {
+            const c = clients[currentId];
+            let msg = "";
+            if(type === 'dag1') msg = `Hoi ${c.fiche.name}! Hoe was je eerste shake deze ochtend? Heb je vragen?`;
+            if(type === 'dag3') msg = `Hoi ${c.fiche.name}! Dag 3! Merk je al wat meer energie?`;
+            if(type === 'vrij') msg = `Hoi ${c.fiche.name}! Hoe gaat het met je programma?`;
+            
+            const cleanPhone = c.fiche.phone.replace(/\D/g,'');
+            window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
+        window.onload = init;
     </script>
 </body>
 </html>
