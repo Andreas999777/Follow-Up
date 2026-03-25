@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coach Follow-up Tool Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
             /* Standaard kleuren (worden via JS aangepast per coach) */
@@ -280,16 +283,29 @@
             "Proteïne Chips", "Proteïnereep (Express/Gewoon)", "SKIN Collageen Booster", "SKIN / Aloë Verzorging"
         ];
 
+        // --- FIREBASE CONFIGURATIE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9xhQuLnjgbaMHZI_vWp4FoUUjTNbA0tM",
+            authDomain: "follow-up-coaches.firebaseapp.com",
+            projectId: "follow-up-coaches",
+            storageBucket: "follow-up-coaches.firebasestorage.app",
+            messagingSenderId: "273305831461",
+            appId: "1:273305831461:web:4471b563a5d0da164457cc"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         let currentCoach = localStorage.getItem('lastActiveCoach') || 'Andreas';
         let clients = {};
         let currentClientId = null;
+        let unsubscribeSnapshot = null;
 
         function init() {
             document.getElementById('coach-selector').value = currentCoach;
             applyTheme();
             generateCheckboxes();
-            loadCoachDatabase();
-            renderSidebar();
+            loadCoachDataFromFirebase();
         }
 
         // --- THEMA LOGICA ---
@@ -318,17 +334,40 @@
             document.getElementById('empty-state').style.display = 'flex';
             document.getElementById('search-client').value = '';
             
-            loadCoachDatabase();
-            renderSidebar();
+            loadCoachDataFromFirebase();
         }
 
-        function loadCoachDatabase() {
-            const data = localStorage.getItem('coachClients_' + currentCoach);
-            clients = data ? JSON.parse(data) : {};
+        function loadCoachDataFromFirebase() {
+            // Stop vorige listener als die er is
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
+
+            const coachRef = db.collection('coaches').doc(currentCoach).collection('clients');
+
+            unsubscribeSnapshot = coachRef.onSnapshot(snapshot => {
+                clients = {};
+                snapshot.forEach(doc => {
+                    clients[doc.id] = doc.data();
+                });
+                renderSidebar();
+                // Als er een klant geselecteerd is, herlaad de data
+                if (currentClientId && clients[currentClientId]) {
+                    loadClientData();
+                } else if (currentClientId && !clients[currentClientId]) {
+                    // Klant is verwijderd door andere sessie
+                    currentClientId = null;
+                    document.getElementById('workspace').style.display = 'none';
+                    document.getElementById('empty-state').style.display = 'flex';
+                }
+            }, error => {
+                console.error('Firestore fout:', error);
+            });
         }
 
-        function saveData() { 
-            localStorage.setItem('coachClients_' + currentCoach, JSON.stringify(clients)); 
+        function saveClientToFirebase(clientId) {
+            if (!clientId || !clients[clientId]) return;
+            const coachRef = db.collection('coaches').doc(currentCoach).collection('clients');
+            coachRef.doc(clientId).set(clients[clientId], { merge: true })
+                .catch(err => console.error('Opslaan mislukt:', err));
         }
 
         // --- CHECKBOX GENERATIE ---
@@ -355,7 +394,7 @@
             productList.forEach((p, i) => { if(document.getElementById(`prod_${i}`).checked) checkedProd.push(p); });
             clients[currentClientId].products = checkedProd;
 
-            saveData();
+            saveClientToFirebase(currentClientId);
             updateStickyInfo();
             updateWeek2Symptoms();
         }
@@ -373,7 +412,7 @@
         function createNewClient() {
             const newId = 'client_' + Date.now();
             clients[newId] = { fiche: {name: 'Nieuwe Klant'}, symptoms: [], products: [], dag1: {}, dag3: {}, dag7: {}, week2: {}, week3: {} };
-            saveData();
+            saveClientToFirebase(newId);
             document.getElementById('search-client').value = '';
             renderSidebar();
             selectClient(newId);
@@ -382,8 +421,11 @@
 
         function deleteClient() {
             if (currentClientId && confirm(`Weet je zeker dat je deze klant wilt verwijderen?`)) {
+                const clientToDelete = currentClientId;
                 delete clients[currentClientId];
-                saveData();
+                // Verwijder uit Firestore
+                db.collection('coaches').doc(currentCoach).collection('clients').doc(clientToDelete).delete()
+                    .catch(err => console.error('Verwijderen mislukt:', err));
                 currentClientId = null;
                 document.getElementById('workspace').style.display = 'none';
                 document.getElementById('empty-state').style.display = 'flex';
@@ -434,7 +476,7 @@
             let val = document.getElementById(`${pre}-${field}`).value;
             if(!clients[currentClientId][section]) clients[currentClientId][section] = {};
             clients[currentClientId][section][field] = val;
-            saveData();
+            saveClientToFirebase(currentClientId);
         }
 
         // --- UI UPDATES ---
