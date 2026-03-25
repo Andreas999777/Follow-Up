@@ -7,127 +7,90 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --hb-green: #7AC142;
+            /* Standaard kleuren (worden via JS aangepast per coach) */
+            --theme-color: #3498db; 
+            --theme-dark: #2980b9;
             --sidebar-dark: #2C3E50;
             --bg-light: #F8FAF7;
             --border-col: #E0E0E0;
             --danger-red: #e74c3c;
-            --andreas-blue: #3498db;
-            --thalyssa-pink: #e91e63;
         }
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-light);
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-light); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
         /* --- Sidebar --- */
-        #sidebar {
-            width: 320px;
-            background: var(--sidebar-dark);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
+        #sidebar { width: 320px; background: var(--sidebar-dark); color: white; display: flex; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 10; }
         
-        /* Coach Selector Sectie */
-        .coach-selector-box {
-            padding: 20px;
-            background: rgba(0,0,0,0.2);
-            border-bottom: 2px solid var(--hb-green);
-        }
-        .coach-selector-box label {
-            display: block;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            color: var(--hb-green);
-            font-weight: 700;
-        }
-        .coach-select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: white;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            outline: none;
-        }
+        .coach-selector-box { padding: 20px; background: rgba(0,0,0,0.2); border-bottom: 3px solid var(--theme-color); transition: border-color 0.3s; }
+        .coach-selector-box label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: var(--theme-color); font-weight: 700; transition: color 0.3s;}
+        .coach-select { width: 100%; padding: 12px; border-radius: 8px; border: none; background: white; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; outline: none; }
 
-        .sidebar-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;}
         .sidebar-header h2 { margin: 0; font-size: 1.1rem; }
         
         .sidebar-actions { padding: 20px; }
-        .new-client-btn {
-            width: 100%; padding: 12px; background: var(--hb-green); color: white;
-            border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
-            font-size: 1rem; transition: 0.2s; margin-bottom: 15px;
-        }
-        .new-client-btn:hover { background: #65a136; }
-
-        .search-bar {
-            width: 100%; padding: 10px; border: none; border-radius: 6px;
-            box-sizing: border-box; font-family: inherit; background: rgba(255,255,255,0.1);
-            color: white; outline: none;
-        }
+        .new-client-btn { width: 100%; padding: 12px; background: var(--theme-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.2s; margin-bottom: 15px; }
+        .new-client-btn:hover { filter: brightness(1.1); }
+        .search-bar { width: 100%; padding: 10px; border: none; border-radius: 6px; box-sizing: border-box; font-family: inherit; background: rgba(255,255,255,0.1); color: white; outline: none; }
 
         #client-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
-        .client-item { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
+        .client-item { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center;}
         .client-item:hover { background: rgba(255,255,255,0.1); }
-        .client-item.active { background: var(--hb-green); color: white; font-weight: bold; }
+        .client-item.active { background: var(--theme-color); color: white; font-weight: bold; }
+        .badges { display: flex; gap: 5px; }
+        .badge { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-size: 0.75rem; background: rgba(255,255,255,0.2); }
+        .badge.alert { background: #e74c3c; color: white; font-weight: bold; animation: pulse 2s infinite;}
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
         /* --- Main Content --- */
         #main-content { flex: 1; display: flex; flex-direction: column; background: white; }
-        #empty-state { display: flex; flex: 1; align-items: center; justify-content: center; color: #888; font-size: 1.2rem; text-align: center; padding: 40px; }
+        #empty-state { display: flex; flex: 1; align-items: center; justify-content: center; flex-direction: column; color: #555; font-size: 1.2rem; }
+        #welcome-msg { font-size: 2.5rem; color: var(--theme-color); margin-bottom: 10px; }
         #workspace { display: none; flex-direction: column; height: 100%; }
         
-        .client-header {
-            padding: 20px 40px; background: #fff; border-bottom: 1px solid var(--border-col);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .client-header { padding: 20px 40px; background: #fff; border-bottom: 1px solid var(--border-col); display: flex; justify-content: space-between; align-items: center; }
         .client-header-info h1 { margin: 0; font-size: 1.8rem; color: #333; }
-        .client-header-info .client-meta { color: #666; font-size: 0.9rem; margin-top: 5px; }
+        .client-meta { color: #666; font-size: 0.9rem; margin-top: 5px; display: flex; align-items: center; gap: 15px; }
+        
+        .btn-wa { background: #25D366; color: white; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.8rem; }
+        .btn-wa:hover { background: #1ebd5a; }
 
-        .delete-btn {
-            background: transparent; color: var(--danger-red); border: 1px solid var(--danger-red);
-            padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;
-        }
+        .delete-btn { background: transparent; color: var(--danger-red); border: 1px solid var(--danger-red); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; font-family: inherit;}
         .delete-btn:hover { background: var(--danger-red); color: white; }
 
+        /* Sticky Info Bar (WHY + Products) */
+        .sticky-info-bar { background: #fdfdfd; padding: 15px 40px; border-bottom: 1px solid var(--border-col); font-size: 0.9rem; color: #444; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .info-block strong { color: var(--theme-color); display: block; margin-bottom: 5px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;}
+
         .tabs { display: flex; background: #f1f1f1; border-bottom: 2px solid var(--border-col); padding: 0 40px; }
-        .tab-btn {
-            padding: 15px 20px; border: none; background: transparent; font-family: inherit;
-            font-weight: 600; color: #555; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
-        }
-        .tab-btn.active { color: var(--hb-green); border-bottom-color: var(--hb-green); }
+        .tab-btn { padding: 15px 20px; border: none; background: transparent; font-family: inherit; font-weight: 600; color: #555; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+        .tab-btn.active { color: var(--theme-color); border-bottom-color: var(--theme-color); }
 
         .tab-content { display: none; flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-light); }
         .tab-content.active { display: block; }
 
         .form-section { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
-        .form-section h3 { margin-top: 0; color: var(--sidebar-dark); border-left: 4px solid var(--hb-green); padding-left: 10px; }
+        .form-section h3 { margin-top: 0; color: var(--sidebar-dark); border-left: 4px solid var(--theme-color); padding-left: 10px; }
 
         .question-row { display: flex; flex-direction: column; margin-bottom: 20px; }
         .question-row label { font-weight: 600; margin-bottom: 5px; color: #444; font-size: 0.95rem; }
-        .question-row textarea, .question-row input {
-            padding: 12px; border: 1px solid var(--border-col); border-radius: 6px;
-            font-family: inherit; font-size: 0.9rem; background: #fafafa;
-        }
-        .coach-note { font-size: 0.82rem; color: #777; margin-top: 6px; font-style: italic; border-left: 2px solid var(--hb-green); padding-left: 8px; line-height: 1.4; }
+        .question-row textarea, .question-row input { padding: 12px; border: 1px solid var(--border-col); border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: #fafafa; }
+        .coach-note { font-size: 0.82rem; color: #777; margin-top: 6px; font-style: italic; border-left: 2px solid var(--theme-color); padding-left: 8px; line-height: 1.4; }
         
         .notes-area { margin-top: 30px; border-top: 2px dashed #ddd; padding-top: 20px; }
-        .notes-area label { color: var(--hb-green); font-size: 1.1rem; }
+        .notes-area label { color: var(--theme-color); font-size: 1.1rem; }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        /* Checkbox Grids */
+        .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
+        .check-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #444; cursor: pointer; }
+        .check-item input { margin: 0; cursor: pointer; }
+
+        .highlight-box { background: #fff8e1; border-left: 4px solid #f39c12; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .highlight-box h4 { margin: 0 0 10px 0; color: #d35400; }
+        .symptom-tag { display: inline-block; background: white; border: 1px solid #f39c12; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin: 2px; }
+
     </style>
 </head>
 <body>
@@ -142,7 +105,7 @@
         </div>
 
         <div class="sidebar-header">
-            <h2 id="sidebar-title">Klanten van Andreas</h2>
+            <h2>Mijn Klanten</h2>
         </div>
         
         <div class="sidebar-actions">
@@ -155,17 +118,31 @@
 
     <div id="main-content">
         <div id="empty-state">
-            <h2 id="empty-msg">Welkom Coach!</h2>
-            Selecteer een klant uit de lijst van <span id="current-coach-name-msg">Andreas</span> of maak een nieuwe aan.
+            <h2 id="welcome-msg">Welkom Andreas</h2>
+            <p style="margin:0; color:#888;">Selecteer een klant of maak een nieuwe aan.</p>
         </div>
 
         <div id="workspace">
             <div class="client-header">
                 <div class="client-header-info">
                     <h1 id="header-client-name">Klant Naam</h1>
-                    <div class="client-meta" id="header-client-phone">Telefoonnummer</div>
+                    <div class="client-meta">
+                        <span id="header-client-phone">000000000</span>
+                        <a href="#" id="wa-btn" class="btn-wa" target="_blank" style="display:none;">WhatsApp</a>
+                    </div>
                 </div>
-                <button class="delete-btn" onclick="deleteClient()">🗑️ Verwijder Klant uit database</button>
+                <button class="delete-btn" onclick="deleteClient()">Klant verwijderen</button>
+            </div>
+
+            <div class="sticky-info-bar">
+                <div class="info-block">
+                    <strong>Doel / De "WHY":</strong>
+                    <span id="sticky-why">Nog niet ingevuld...</span>
+                </div>
+                <div class="info-block">
+                    <strong>Producten in gebruik:</strong>
+                    <span id="sticky-products">Geen producten geselecteerd...</span>
+                </div>
             </div>
 
             <div class="tabs">
@@ -182,10 +159,28 @@
                     <h3>Basisgegevens (Intake)</h3>
                     <div class="grid-2">
                         <div class="question-row"><label>Naam Klant</label><input type="text" id="fiche-name" oninput="autoSave('fiche', 'name'); updateSidebarName()"></div>
-                        <div class="question-row"><label>Telefoonnummer</label><input type="text" id="fiche-phone" oninput="autoSave('fiche', 'phone')"></div>
-                        <div class="question-row"><label>Startdatum (Dag 1)</label><input type="date" id="fiche-startdate" oninput="autoSave('fiche', 'startdate')"></div>
-                        <div class="question-row"><label>De "WHY" (Waarom gestart?)</label><textarea id="fiche-why" rows="2" oninput="autoSave('fiche', 'why')"></textarea><div class="coach-note">Gebruik letterlijk de woorden van de klant.</div></div>
+                        <div class="question-row"><label>Telefoonnummer</label><input type="text" id="fiche-phone" oninput="autoSave('fiche', 'phone'); updateWhatsApp()"></div>
+                        <div class="question-row"><label>Startdatum (Dag 1)</label><input type="date" id="fiche-startdate" oninput="autoSave('fiche', 'startdate'); renderSidebar()"><div class="coach-note">Bepaalt automatische meldingen in zijbalk.</div></div>
+                        <div class="question-row"><label>Geboortedatum</label><input type="date" id="fiche-birthdate" oninput="autoSave('fiche', 'birthdate'); renderSidebar()"><div class="coach-note">Voor de verjaardags-verklikker.</div></div>
+                        <div class="question-row" style="grid-column: span 2;"><label>De "WHY" (Waarom gestart?)</label><textarea id="fiche-why" rows="2" oninput="autoSave('fiche', 'why'); updateStickyInfo()"></textarea><div class="coach-note">Gebruik letterlijk de woorden van de klant.</div></div>
                     </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Symptomen Checklist (Start)</h3>
+                    <div class="coach-note" style="margin-bottom:15px;">Vink aan waar de klant bij de intake last van heeft. Dit komt in Week 2 terug.</div>
+                    <div class="check-grid" id="symptoms-grid">
+                        </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Producten Inventaris</h3>
+                    <div class="coach-note" style="margin-bottom:15px;">Vink aan wat de klant in huis heeft. Blijft zichtbaar onder elk tabblad.</div>
+                    <div class="check-grid" id="products-grid">
+                        </div>
+                </div>
+
+                <div class="form-section">
                     <div class="question-row notes-area"><label>Extra opmerkingen (Algemeen)</label><textarea id="fiche-notes" rows="4" oninput="autoSave('fiche', 'notes')"></textarea></div>
                 </div>
             </div>
@@ -232,7 +227,14 @@
             <div id="tab-week2" class="tab-content">
                 <div class="form-section">
                     <h3>Opvolging Week 2</h3>
-                    <div class="question-row"><label>1. Hoe voel je je? Meer energie?</label><textarea id="w2-q1" oninput="autoSave('week2', 'q1')"></textarea><div class="coach-note">Check intake symptomen: is er al verbetering merkbaar?</div></div>
+                    
+                    <div class="highlight-box" id="w2-symptoms-box" style="display:none;">
+                        <h4>Intake Evaluatie:</h4>
+                        <p style="font-size:0.85rem; margin-bottom:10px;">De klant gaf bij de start aan last te hebben van onderstaande punten. Vraag of hier al verbetering in zit:</p>
+                        <div id="w2-symptoms-list"></div>
+                    </div>
+
+                    <div class="question-row"><label>1. Hoe voel je je? Meer energie?</label><textarea id="w2-q1" oninput="autoSave('week2', 'q1')"></textarea></div>
                     <div class="question-row"><label>2. Hoeveel water heb je gedronken?</label><textarea id="w2-q2" oninput="autoSave('week2', 'q2')"></textarea></div>
                     <div class="question-row"><label>3. Heb je vanmorgen gemeten?</label><textarea id="w2-q3" oninput="autoSave('week2', 'q3')"></textarea><div class="coach-note">Kan vaak al ±10 cm verschil zijn in totaal!</div></div>
                     <div class="question-row notes-area"><label>Extra opmerkingen (Week 2)</label><textarea id="w2-notes" rows="3" oninput="autoSave('week2', 'notes')"></textarea></div>
@@ -254,31 +256,55 @@
     </div>
 
     <script>
-        // Data wordt nu per coach opgeslagen: coachClients_Andreas en coachClients_Thalyssa
+        // CONFIGURATIE LIJSTEN
+        const symptomList = [
+            "Energiegebrek", "Regelmatig verkouden", "Hoofdpijn / Migraine", "Spierkrampen", "Spierpijn", 
+            "Vocht vasthouden", "Angst / Paniek", "Brandend maagzuur", "Stoelgang problemen", "Concentratieverlies", 
+            "Vergeetachtigheid", "Onzeker zijn", "Minder aankunnen", "Negatieve gedachten", "Snel geïrriteerd", 
+            "Zin in zoet", "Ontstekingen", "Gewrichtspijn", "Hartkloppingen", "Droge huid / Acné", 
+            "Trage wondgenezing", "Haarverlies", "Wazig zicht", "Broze nagels", "Schimmelinfectie", 
+            "Allergieën", "Bloedend tandvlees", "Koortsblaasjes", "Veel dorst/plassen", "Slechte slaper"
+        ];
+
+        const productList = [
+            "F1 Shake (Smaak naar keuze)", "Proteïnedrankmix (PDM)", "Vegan PDM", "Tri Blend Select",
+            "Herbal Aloë Drank (Mango/Original/Max)", "Instant Theedrank (50g/100g)", "Multivezel Drank",
+            "Microbiotic Max", "Immune Booster", "Phyto Complete", "Formula 2 (Vrouwen/Mannen)",
+            "Xtra-Cal", "Herbalifeline Max", "Beta Heart", "Night Mode", "Active Mind Complex",
+            "H24 Rebuild Strength", "H24 LiftOff Max", "H24 CR7 Drive", "H24 Hydrate",
+            "Proteïne Chips", "Proteïnereep (Express/Gewoon)", "SKIN Collageen Booster", "SKIN / Aloë Verzorging"
+        ];
+
         let currentCoach = localStorage.getItem('lastActiveCoach') || 'Andreas';
         let clients = {};
         let currentClientId = null;
 
         function init() {
             document.getElementById('coach-selector').value = currentCoach;
+            applyTheme();
+            generateCheckboxes();
             loadCoachDatabase();
             renderSidebar();
         }
 
-        function loadCoachDatabase() {
-            const data = localStorage.getItem('coachClients_' + currentCoach);
-            clients = data ? JSON.parse(data) : {};
-            
-            // UI updates
-            document.getElementById('sidebar-title').innerText = `Klanten van ${currentCoach}`;
-            document.getElementById('current-coach-name-msg').innerText = currentCoach;
+        // --- THEMA LOGICA ---
+        function applyTheme() {
+            const root = document.documentElement;
+            if(currentCoach === 'Andreas') {
+                root.style.setProperty('--theme-color', '#3498db');
+                root.style.setProperty('--theme-dark', '#2980b9');
+            } else {
+                root.style.setProperty('--theme-color', '#7AC142');
+                root.style.setProperty('--theme-dark', '#65a136');
+            }
+            document.getElementById('welcome-msg').innerText = `Welkom ${currentCoach}`;
         }
 
         function switchCoach() {
             currentCoach = document.getElementById('coach-selector').value;
             localStorage.setItem('lastActiveCoach', currentCoach);
+            applyTheme();
             
-            // Reset workspace
             currentClientId = null;
             document.getElementById('workspace').style.display = 'none';
             document.getElementById('empty-state').style.display = 'flex';
@@ -288,9 +314,57 @@
             renderSidebar();
         }
 
+        function loadCoachDatabase() {
+            const data = localStorage.getItem('coachClients_' + currentCoach);
+            clients = data ? JSON.parse(data) : {};
+        }
+
+        function saveData() { 
+            localStorage.setItem('coachClients_' + currentCoach, JSON.stringify(clients)); 
+        }
+
+        // --- CHECKBOX GENERATIE ---
+        function generateCheckboxes() {
+            const symGrid = document.getElementById('symptoms-grid');
+            symptomList.forEach((s, idx) => {
+                symGrid.innerHTML += `<label class="check-item"><input type="checkbox" id="symp_${idx}" onchange="saveCheckboxes()"> ${s}</label>`;
+            });
+
+            const prodGrid = document.getElementById('products-grid');
+            productList.forEach((p, idx) => {
+                prodGrid.innerHTML += `<label class="check-item"><input type="checkbox" id="prod_${idx}" onchange="saveCheckboxes()"> ${p}</label>`;
+            });
+        }
+
+        function saveCheckboxes() {
+            if(!currentClientId) return;
+            
+            let checkedSymp = [];
+            symptomList.forEach((s, i) => { if(document.getElementById(`symp_${i}`).checked) checkedSymp.push(s); });
+            clients[currentClientId].symptoms = checkedSymp;
+
+            let checkedProd = [];
+            productList.forEach((p, i) => { if(document.getElementById(`prod_${i}`).checked) checkedProd.push(p); });
+            clients[currentClientId].products = checkedProd;
+
+            saveData();
+            updateStickyInfo();
+            updateWeek2Symptoms();
+        }
+
+        function loadCheckboxes() {
+            const data = clients[currentClientId];
+            const savedSymp = data.symptoms || [];
+            symptomList.forEach((s, i) => { document.getElementById(`symp_${i}`).checked = savedSymp.includes(s); });
+
+            const savedProd = data.products || [];
+            productList.forEach((p, i) => { document.getElementById(`prod_${i}`).checked = savedProd.includes(p); });
+        }
+
+        // --- KLANTEN BEHEREN ---
         function createNewClient() {
             const newId = 'client_' + Date.now();
-            clients[newId] = { fiche: {name: 'Nieuwe Klant'}, dag1: {}, dag3: {}, dag7: {}, week2: {}, week3: {} };
+            clients[newId] = { fiche: {name: 'Nieuwe Klant'}, symptoms: [], products: [], dag1: {}, dag3: {}, dag7: {}, week2: {}, week3: {} };
             saveData();
             document.getElementById('search-client').value = '';
             renderSidebar();
@@ -299,7 +373,7 @@
         }
 
         function deleteClient() {
-            if (currentClientId && confirm(`Weet je zeker dat je deze klant uit de database van ${currentCoach} wilt verwijderen?`)) {
+            if (currentClientId && confirm(`Weet je zeker dat je deze klant wilt verwijderen?`)) {
                 delete clients[currentClientId];
                 saveData();
                 currentClientId = null;
@@ -307,26 +381,6 @@
                 document.getElementById('empty-state').style.display = 'flex';
                 renderSidebar();
             }
-        }
-
-        function filterClients() {
-            const query = document.getElementById('search-client').value.toLowerCase();
-            document.querySelectorAll('.client-item').forEach(item => {
-                item.style.display = item.innerText.toLowerCase().includes(query) ? 'block' : 'none';
-            });
-        }
-
-        function renderSidebar() {
-            const list = document.getElementById('client-list');
-            list.innerHTML = '';
-            Object.keys(clients).reverse().forEach(id => {
-                const li = document.createElement('li');
-                li.className = 'client-item' + (id === currentClientId ? ' active' : '');
-                li.innerText = clients[id].fiche.name || 'Naamloos';
-                li.onclick = () => selectClient(id);
-                list.appendChild(li);
-            });
-            filterClients();
         }
 
         function selectClient(id) {
@@ -343,8 +397,11 @@
             document.getElementById('header-client-name').innerText = data.fiche.name || 'Naamloos';
             document.getElementById('header-client-phone').innerText = data.fiche.phone || '';
             
-            const ficheFields = ['name', 'phone', 'startdate', 'why', 'notes'];
-            ficheFields.forEach(f => document.getElementById(`fiche-${f}`).value = data.fiche[f] || '');
+            const ficheFields = ['name', 'phone', 'startdate', 'birthdate', 'why', 'notes'];
+            ficheFields.forEach(f => {
+                let el = document.getElementById(`fiche-${f}`);
+                if(el) el.value = data.fiche[f] || '';
+            });
 
             const sections = ['dag1', 'dag3', 'dag7', 'week2', 'week3'];
             sections.forEach(s => {
@@ -356,6 +413,11 @@
                 let nEl = document.getElementById(`${pre}-notes`);
                 if(nEl) nEl.value = data[s].notes || '';
             });
+
+            loadCheckboxes();
+            updateStickyInfo();
+            updateWhatsApp();
+            updateWeek2Symptoms();
         }
 
         function autoSave(section, field) {
@@ -367,15 +429,109 @@
             saveData();
         }
 
-        function updateSidebarName() {
-            const name = document.getElementById('fiche-name').value;
-            document.getElementById('header-client-name').innerText = name || 'Naamloos';
-            const active = document.querySelector('.client-item.active');
-            if(active) active.innerText = name || 'Naamloos';
+        // --- UI UPDATES ---
+        function updateStickyInfo() {
+            const data = clients[currentClientId];
+            document.getElementById('sticky-why').innerText = data.fiche.why || 'Nog niet ingevuld...';
+            document.getElementById('sticky-products').innerText = (data.products && data.products.length > 0) ? data.products.join(', ') : 'Geen producten geselecteerd...';
         }
 
-        function saveData() { 
-            localStorage.setItem('coachClients_' + currentCoach, JSON.stringify(clients)); 
+        function updateWeek2Symptoms() {
+            const data = clients[currentClientId];
+            const box = document.getElementById('w2-symptoms-box');
+            const list = document.getElementById('w2-symptoms-list');
+            if(data.symptoms && data.symptoms.length > 0) {
+                box.style.display = 'block';
+                list.innerHTML = data.symptoms.map(s => `<span class="symptom-tag">${s}</span>`).join(' ');
+            } else {
+                box.style.display = 'none';
+            }
+        }
+
+        function updateWhatsApp() {
+            const phone = document.getElementById('fiche-phone').value.replace(/\D/g,'');
+            const btn = document.getElementById('wa-btn');
+            if(phone.length >= 9) {
+                btn.style.display = 'inline-block';
+                let waPhone = phone.startsWith('0') ? '32' + phone.substring(1) : phone; // Basis aanname BE, kan aangepast.
+                btn.href = `https://wa.me/${waPhone}`;
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+
+        function updateSidebarName() {
+            document.getElementById('header-client-name').innerText = document.getElementById('fiche-name').value || 'Naamloos';
+            renderSidebar();
+        }
+
+        function filterClients() {
+            const query = document.getElementById('search-client').value.toLowerCase();
+            document.querySelectorAll('.client-item').forEach(item => {
+                item.style.display = item.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
+            });
+        }
+
+        // --- DATUM LOGICA & SIDEBAR RENDERING ---
+        function checkAlerts(data) {
+            let alerts = { birthday: false, followup: false, badgeText: '' };
+            let today = new Date();
+            today.setHours(0,0,0,0);
+
+            // Verjaardag Check (zelfde dag en maand)
+            if(data.fiche.birthdate) {
+                let bd = new Date(data.fiche.birthdate);
+                if(bd.getDate() === today.getDate() && bd.getMonth() === today.getMonth()) alerts.birthday = true;
+            }
+
+            // Opvolg Check
+            if(data.fiche.startdate) {
+                let sd = new Date(data.fiche.startdate);
+                sd.setHours(0,0,0,0);
+                let diffDays = Math.round((today - sd) / (1000 * 60 * 60 * 24));
+                
+                if(diffDays === 1) { alerts.followup = true; alerts.badgeText = 'D1'; }
+                else if(diffDays === 3) { alerts.followup = true; alerts.badgeText = 'D3'; }
+                else if(diffDays === 7) { alerts.followup = true; alerts.badgeText = 'D7'; }
+                else if(diffDays === 14) { alerts.followup = true; alerts.badgeText = 'W2'; }
+                else if(diffDays === 21) { alerts.followup = true; alerts.badgeText = 'W3'; }
+                else if(diffDays > 21 && (diffDays % 30 === 0)) { alerts.followup = true; alerts.badgeText = 'Maand'; }
+            }
+            return alerts;
+        }
+
+        function renderSidebar() {
+            const list = document.getElementById('client-list');
+            list.innerHTML = '';
+            
+            let clientArray = Object.keys(clients).map(id => {
+                return { id: id, data: clients[id], alerts: checkAlerts(clients[id]) };
+            });
+
+            // Sorteer: Alerts bovenaan, daarna nieuwste eerst
+            clientArray.sort((a, b) => {
+                let aUrgent = (a.alerts.birthday || a.alerts.followup) ? 1 : 0;
+                let bUrgent = (b.alerts.birthday || b.alerts.followup) ? 1 : 0;
+                if(aUrgent !== bUrgent) return bUrgent - aUrgent;
+                // Als beide even urgent zijn, sorteer op ID (tijdstip van aanmaak reverse)
+                return b.id.localeCompare(a.id);
+            });
+
+            clientArray.forEach(client => {
+                const li = document.createElement('li');
+                li.className = 'client-item' + (client.id === currentClientId ? ' active' : '');
+                
+                let html = `<span>${client.data.fiche.name || 'Naamloos'}</span>`;
+                let badgesHtml = `<div class="badges">`;
+                if(client.alerts.birthday) badgesHtml += `<div class="badge" title="Jarig Vandaag!">🎂</div>`;
+                if(client.alerts.followup) badgesHtml += `<div class="badge alert" title="Opvolgmoment!">${client.alerts.badgeText}</div>`;
+                badgesHtml += `</div>`;
+                
+                li.innerHTML = html + badgesHtml;
+                li.onclick = () => selectClient(client.id);
+                list.appendChild(li);
+            });
+            filterClients();
         }
 
         function openTab(tabId, event) {
